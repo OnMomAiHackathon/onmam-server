@@ -10,4 +10,9 @@ public class HelloController {
     public void hello(){
         System.out.println("hello!");
     }
+
+    @GetMapping("bye")
+    public void bye(){
+        System.out.println("bye~");
+    }
 }
