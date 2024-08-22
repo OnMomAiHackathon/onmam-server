@@ -20,7 +20,7 @@ export DATABASE_PASSWORD=$(echo $SECRET | jq -r .DATABASE_PASSWORD)
 SPRINGBOOT_DIR="/opt/onmom/springboot"
 
 # 이전에 실행된 Spring Boot 애플리케이션 종료
-CURRENT_PID=$(pgrep -f 'onmom.*.jar')
+CURRENT_PID=$(pgrep -f 'onmom-server.*.jar')
 if [ -n "$CURRENT_PID" ]; then
     echo "Stopping running Spring Boot application"
     kill -15 "$CURRENT_PID"
