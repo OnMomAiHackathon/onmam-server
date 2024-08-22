@@ -47,7 +47,7 @@ jobs:
           cp appspec.yml build/libs/
           cp deploy.sh build/libs/
           cd build/libs/
-          zip -r springboot-build-$GITHUB_SHA.zip onmom-0.0.1-SNAPSHOT.jar appspec.yml deploy.sh
+          zip -r springboot-build-$GITHUB_SHA.zip onmom-server-0.0.1-SNAPSHOT.jar appspec.yml deploy.sh
 
       - name: Upload Spring Boot build zip to S3
         run: |
