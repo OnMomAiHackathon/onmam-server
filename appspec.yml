@@ -3,12 +3,12 @@ os: linux
 files:
   # Spring Boot 빌드 아티팩트를 EC2 인스턴스로 복사
   - source: /
-    destination: /opt/nonghyuphealthcare/springboot
+    destination: /opt/onmom/springboot
     overwrite: yes
 
 permissions:
   # Spring Boot 애플리케이션 디렉토리 권한 설정
-  - object: /opt/nonghyuphealthcare/springboot/
+  - object: /opt/onmom/springboot/
     owner: ubuntu
     group: ubuntu
     mode: 755
