@@ -1,0 +1,30 @@
+package entity.diary;
+
+import entity.group.OnmomGroup;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+
+// 그림일기의 기본 정보를 저장하는 엔티티
+@Entity
+@Table(name = "onmomDiaryEntry")
+@Getter
+@Setter
+public class OnmomDiaryEntry {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long diaryEntryId;
+
+    // 여러 그림일기는 하나의 그룹에 속한다.
+    @ManyToOne
+    @JoinColumn(name = "groupId")
+    private OnmomGroup group;
+
+    @Column(columnDefinition = "TEXT")
+    private String textContent; // 그림일기의 텍스트 내용
+    private String imageURL; // 그림일기의 이미지 URL
+    private String audioURL; // 음성 파일의 URL
+    private LocalDate createdAt; // 그림일기 생성 날짜
+}
