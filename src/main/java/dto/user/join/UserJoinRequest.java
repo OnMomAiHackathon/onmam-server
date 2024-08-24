@@ -1,4 +1,4 @@
-package dto.user;
+package dto.user.join;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +7,8 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class UserRegistrationRequest {
+public class UserJoinRequest {
+    private String kakaoId;  // Kakao ID는 선택적
     private String email;
     private String password;
     private String name;
