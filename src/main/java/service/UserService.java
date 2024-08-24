@@ -1,7 +1,9 @@
 package service;
 
+import dto.user.get.UserResponseDto;
 import dto.user.join.UserJoinRequest;
 import entity.user.OnmomUser;
+import exception.user.get.UserNotFoundException;
 import exception.user.join.UserAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,5 +32,11 @@ public class UserService {
                 //카카오 id, 그룹, role은 회원가입시 등록하지 않는다.
 
         return userRepository.save(user);
+    }
+
+    // 회원 정보 조회
+    public UserResponseDto getUserById(Long userId) {
+        OnmomUser user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("유저를 찾을 수 없습니다."));
+        return new UserResponseDto(user);
     }
 }
