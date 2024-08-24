@@ -1,8 +1,9 @@
 package entity.medication;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "onmomMedicationLog")
 @Getter
-@Setter
+@NoArgsConstructor
 public class OnmomMedicationLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,4 +24,12 @@ public class OnmomMedicationLog {
 
     private LocalDateTime eatTime; // 먹은 시간
     private boolean taken; // 복용 여부
+
+    @Builder
+    public OnmomMedicationLog(Long logId, OnmomMedication medication, LocalDateTime eatTime, boolean taken) {
+        this.logId = logId;
+        this.medication = medication;
+        this.eatTime = eatTime;
+        this.taken = taken;
+    }
 }

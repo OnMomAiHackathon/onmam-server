@@ -3,8 +3,9 @@ package entity.group;
 import entity.diary.OnmomDiaryEntry;
 import entity.user.OnmomUser;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -13,7 +14,7 @@ import java.util.Set;
 @Entity
 @Table(name = "onmomGroup")
 @Getter
-@Setter
+@NoArgsConstructor
 public class OnmomGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +30,12 @@ public class OnmomGroup {
     @OneToMany(mappedBy = "group")
     private Set<OnmomDiaryEntry> diaryEntries;
 
+    @Builder
+    public OnmomGroup(Long groupId, LocalDate createdAt, String invitationCode, Set<OnmomUser> users, Set<OnmomDiaryEntry> diaryEntries) {
+        this.groupId = groupId;
+        this.createdAt = createdAt;
+        this.invitationCode = invitationCode;
+        this.users = users;
+        this.diaryEntries = diaryEntries;
+    }
 }

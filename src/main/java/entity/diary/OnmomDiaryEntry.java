@@ -2,8 +2,9 @@ package entity.diary;
 
 import entity.group.OnmomGroup;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
@@ -11,7 +12,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "onmomDiaryEntry")
 @Getter
-@Setter
+@NoArgsConstructor
 public class OnmomDiaryEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +28,14 @@ public class OnmomDiaryEntry {
     private String imageURL; // 그림일기의 이미지 URL
     private String audioURL; // 음성 파일의 URL
     private LocalDate createdAt; // 그림일기 생성 날짜
+
+    @Builder
+    public OnmomDiaryEntry(Long diaryEntryId, OnmomGroup group, String textContent, String imageURL, String audioURL, LocalDate createdAt) {
+        this.diaryEntryId = diaryEntryId;
+        this.group = group;
+        this.textContent = textContent;
+        this.imageURL = imageURL;
+        this.audioURL = audioURL;
+        this.createdAt = createdAt;
+    }
 }
