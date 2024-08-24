@@ -19,10 +19,4 @@ public class AuthController {
         LoginResponse response = userService.loginUser(request);
         return ResponseEntity.ok(response);
     }
-
-    // 로그인 페이지 postman처리용
-    @GetMapping("/login")
-    public ResponseEntity<String> showLoginPage() {
-        return ResponseEntity.ok("Login page");
-    }
 }

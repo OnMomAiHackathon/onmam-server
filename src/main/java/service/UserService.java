@@ -9,7 +9,6 @@ import exception.auth.login.InvalidCredentialsException;
 import exception.user.get.UserNotFoundException;
 import exception.user.join.UserAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import repository.user.UserRepository;
 
@@ -17,7 +16,6 @@ import repository.user.UserRepository;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     //회원 가입
     public OnmomUser joinUser(UserJoinRequest request) {
@@ -27,12 +25,9 @@ public class UserService {
             throw new UserAlreadyExistsException("이미 사용 중인 이메일입니다.");
         }
 
-        // 비밀번호 암호화
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
-
         OnmomUser user = OnmomUser.builder()
                 .email(request.getEmail())
-                .password(encodedPassword)  // 암호화된 비밀번호 저장
+                .password(request.getPassword())
                 .name(request.getName())
                 .birthdate(request.getBirthdate())
                 .phone(request.getPhone())
@@ -55,7 +50,7 @@ public class UserService {
                 .orElseThrow(() -> new InvalidCredentialsException("이메일 또는 비밀번호가 잘못되었습니다."));
 
         // 비밀번호 검증
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!user.getPassword().equals(request.getPassword())) {
             throw new InvalidCredentialsException("이메일 또는 비밀번호가 잘못되었습니다.");
         }
 
