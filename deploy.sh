@@ -16,6 +16,12 @@ export DATABASE_URL=$(echo $SECRET | jq -r .DATABASE_URL)
 export DATABASE_USERNAME=$(echo $SECRET | jq -r .DATABASE_USERNAME)
 export DATABASE_PASSWORD=$(echo $SECRET | jq -r .DATABASE_PASSWORD)
 
+# s3 파일업로드를 위한 환경 변수
+export AWS_ACCESS_KEY_ID=$(echo $SECRET | jq -r .AWS_ACCESS_KEY_ID)
+export AWS_SECRET_ACCESS_KEY=$(echo $SECRET | jq -r .AWS_SECRET_ACCESS_KEY)
+export AWS_REGION=$(echo $SECRET | jq -r .AWS_REGION)
+export S3_BUCKET=$(echo $SECRET | jq -r .S3_BUCKET)
+
 # Spring Boot 애플리케이션 디렉터리
 SPRINGBOOT_DIR="/opt/onmom/springboot"
 
