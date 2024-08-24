@@ -5,10 +5,7 @@ import dto.auth.login.LoginResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import service.UserService;
 
 @RestController
@@ -24,5 +21,12 @@ public class AuthController {
         // 로그인 성공 시 세션에 사용자 정보 저장
         session.setAttribute("user", response);
         return ResponseEntity.ok(response);
+    }
+
+    //로그아웃
+    @GetMapping("/logout")
+    public ResponseEntity<Void> logout(HttpSession session) {
+        session.invalidate();  // 세션 무효화
+        return ResponseEntity.ok().build();
     }
 }
