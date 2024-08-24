@@ -31,6 +31,4 @@ public class UserController {
         UserResponseDto userResponse = userService.getUserById(userId);
         return ResponseEntity.ok(userResponse);
     }
-
-
 }

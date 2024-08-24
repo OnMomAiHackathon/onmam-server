@@ -4,10 +4,7 @@ import dto.auth.login.LoginRequest;
 import dto.auth.login.LoginResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import service.UserService;
 
 @RestController
@@ -21,5 +18,11 @@ public class AuthController {
     public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest request) {
         LoginResponse response = userService.loginUser(request);
         return ResponseEntity.ok(response);
+    }
+
+    // 로그인 페이지 postman처리용
+    @GetMapping("/login")
+    public ResponseEntity<String> showLoginPage() {
+        return ResponseEntity.ok("Login page");
     }
 }
