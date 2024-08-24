@@ -2,8 +2,9 @@ package entity.medication;
 
 import entity.user.OnmomUser;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.Set;
 @Entity
 @Table(name = "onmomMedication")
 @Getter
-@Setter
+@NoArgsConstructor
 public class OnmomMedication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,4 +33,16 @@ public class OnmomMedication {
     // 하나의 복약정보는 여러 복약 로그데이터를 가질 수 있다.
     @OneToMany(mappedBy = "medication")
     private Set<OnmomMedicationLog> medicationLogs;
+
+    @Builder
+    public OnmomMedication(Long medicationId, OnmomUser user, String medicineName, String dosage, LocalDate startDate, LocalDate endDate, String frequency, Set<OnmomMedicationLog> medicationLogs) {
+        this.medicationId = medicationId;
+        this.user = user;
+        this.medicineName = medicineName;
+        this.dosage = dosage;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.frequency = frequency;
+        this.medicationLogs = medicationLogs;
+    }
 }

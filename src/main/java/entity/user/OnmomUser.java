@@ -3,8 +3,9 @@ package entity.user;
 import entity.group.OnmomGroup;
 import entity.medication.OnmomMedication;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.Set;
 @Entity
 @Table(name = "onmomUser")
 @Getter
-@Setter
+@NoArgsConstructor
 public class OnmomUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,4 +38,17 @@ public class OnmomUser {
     // 하나의 유저는 여러 복약 정보를 가질 수 있다.
     @OneToMany(mappedBy = "user")
     private Set<OnmomMedication> medications;
+
+
+    @Builder
+    public OnmomUser(String email, String password, String name, LocalDate birthdate, String phone, String kakaoId, String role, OnmomGroup group) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.birthdate = birthdate;
+        this.phone = phone;
+        this.kakaoId = kakaoId;
+        this.role = role;
+        this.group = group;
+    }
 }
