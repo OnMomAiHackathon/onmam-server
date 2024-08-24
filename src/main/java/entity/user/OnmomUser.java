@@ -18,7 +18,6 @@ public class OnmomUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    private String kakaoId; // 카카오아이디
     private String email; // 이메일
     private String password; // 비번
     private String name; // 이름
