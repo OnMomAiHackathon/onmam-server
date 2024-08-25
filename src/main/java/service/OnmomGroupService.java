@@ -4,6 +4,8 @@ import dto.group.GroupCreateRequest;
 import dto.group.GroupCreateResponse;
 import dto.group.GroupMemberUpdateRequest;
 import dto.group.GroupMemberUpdateResponse;
+import dto.group.invite.InviteAcceptRequest;
+import dto.group.invite.InviteAcceptResponse;
 import entity.group.OnmomGroup;
 import entity.group.UserNickname;
 import entity.user.OnmomUser;
@@ -100,7 +102,7 @@ public class OnmomGroupService {
     // 초대 코드 생성 및 전송
     public String sendInvite(Long groupId, String email) {
         OnmomGroup group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid group ID"));
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹아이디입니다."));
 
         // 초대 코드 생성
         String inviteCode = generateInviteCode(5); // 5글자의 초대 코드 생성
@@ -122,4 +124,31 @@ public class OnmomGroupService {
         return inviteCode.toString();
     }
 
+    // 초대 수락 로직
+    public InviteAcceptResponse acceptInvite(Long groupId, InviteAcceptRequest request) {
+        // 1. 그룹과 초대 코드 확인
+        OnmomGroup group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹 아이디입니다."));
+
+        if (!group.getInvitationCode().equals(request.getInviteCode())) {
+            throw new IllegalArgumentException("유효하지 않은 초대 코드입니다.");
+        }
+
+        // 2. 사용자가 이미 그룹에 속해 있는지 확인
+        OnmomUser user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 아이디입니다."));
+
+        if (user.getGroup() != null) {
+            throw new IllegalArgumentException("사용자가 이미 다른 그룹에 속해있습니다.");
+        }
+
+        // 3. 그룹에 사용자 추가
+        user.setGroup(group);
+        userRepository.save(user);
+
+        // 4. 응답 생성
+        return InviteAcceptResponse.builder()
+                .message("초대가 성공적으로 수락되었습니다.")
+                .build();
+    }
 }
