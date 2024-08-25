@@ -4,6 +4,8 @@ import dto.group.GroupCreateRequest;
 import dto.group.GroupCreateResponse;
 import dto.group.GroupMemberUpdateRequest;
 import dto.group.GroupMemberUpdateResponse;
+import dto.group.invite.InviteAcceptRequest;
+import dto.group.invite.InviteAcceptResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +47,15 @@ public class GroupController {
         Map<String, String> response = new HashMap<>();
         response.put("message", inviteCode);
 
+        return ResponseEntity.ok(response);
+    }
+
+    // 가족 초대 수락
+    @PostMapping("/{groupId}/invite/accept")
+    public ResponseEntity<InviteAcceptResponse> acceptInvite(
+            @PathVariable Long groupId,
+            @RequestBody InviteAcceptRequest request) {
+        InviteAcceptResponse response = onmomGroupService.acceptInvite(groupId, request);
         return ResponseEntity.ok(response);
     }
 }
