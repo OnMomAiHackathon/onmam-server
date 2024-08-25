@@ -52,4 +52,9 @@ public class OnmomUser {
         this.role = role;
         this.group = group;
     }
+
+    // 그룹생성시 set Group!
+    public void setGroup(OnmomGroup group) {
+        this.group = group;
+    }
 }

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import service.KakaoAuthService;
 import service.UserService;
 
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("auth")
@@ -20,10 +22,11 @@ public class AuthController {
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest request, HttpSession session) {
-        LoginResponse response = userService.loginUser(request);
+        Optional<LoginResponse> response = userService.loginUser(request);
         // 로그인 성공 시 세션에 사용자 정보 저장
         session.setAttribute("user", response);
-        return ResponseEntity.ok(response);
+        session.setAttribute("groupId",response.get().getGroupId());//그룹아이디도 저장
+        return ResponseEntity.ok(response.get());
     }
 
     //로그아웃
@@ -38,10 +41,11 @@ public class AuthController {
     @PostMapping("/kakao")
     public ResponseEntity<LoginResponse> kakaoLogin(@RequestBody KakaoLoginRequest request, HttpSession session) {
         // 카카오 OAuth2.0을 통해 사용자 정보 가져오기
-        LoginResponse response = kakaoAuthService.kakaoLogin(request.getAccessToken());
+        Optional<LoginResponse> response = kakaoAuthService.kakaoLogin(request.getAccessToken());
 
         // 로그인 성공 시 세션에 사용자 정보 저장
         session.setAttribute("user", response);
-        return ResponseEntity.ok(response);
+        session.setAttribute("groupId",response.get().getGroupId());
+        return ResponseEntity.ok(response.get());
     }
 }

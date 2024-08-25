@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import repository.user.UserRepository;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -44,7 +46,7 @@ public class UserService {
 
 
     //로그인
-    public LoginResponse loginUser(LoginRequest request) {
+    public Optional<LoginResponse> loginUser(LoginRequest request) {
         // 이메일로 사용자 조회
         OnmomUser user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("이메일 또는 비밀번호가 잘못되었습니다."));
@@ -54,7 +56,10 @@ public class UserService {
             throw new InvalidCredentialsException("이메일 또는 비밀번호가 잘못되었습니다.");
         }
 
+        // 그룹이 null일 수 있으므로 안전하게 처리
+        Long groupId = (user.getGroup() != null) ? user.getGroup().getGroupId() : null;
+
         // 로그인 성공 시 사용자 정보 반환
-        return new LoginResponse(user.getUserId(), user.getKakaoId(), user.getEmail(), user.getName());
+        return Optional.of(new LoginResponse(user.getUserId(), user.getKakaoId(), user.getEmail(), user.getName(), groupId));
     }
 }
