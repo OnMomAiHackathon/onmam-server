@@ -36,8 +36,6 @@ dependencies {
 
 	implementation 'software.amazon.awssdk:s3:2.20.0'// 08.24 정지안 : aws s3
 
-	implementation 'org.springframework.boot:spring-boot-starter-mail'// 08.25 정지안 : Email서비스
-
 
 }
 

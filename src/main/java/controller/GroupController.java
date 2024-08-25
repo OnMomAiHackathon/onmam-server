@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import service.OnmomGroupService;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,8 +39,12 @@ public class GroupController {
 
     // 초대코드 보내기
     @PostMapping("/{groupId}/invite")
-    public ResponseEntity<String> sendGroupInvite(@PathVariable Long groupId, @RequestParam String email) {
-        String response = onmomGroupService.sendInvite(groupId, email);
+    public ResponseEntity<Map<String,String>> sendGroupInvite(@PathVariable Long groupId, @RequestBody String email) {
+        String inviteCode = onmomGroupService.sendInvite(groupId, email);
+        // 응답 데이터 구성
+        Map<String, String> response = new HashMap<>();
+        response.put("message", inviteCode);
+
         return ResponseEntity.ok(response);
     }
 }

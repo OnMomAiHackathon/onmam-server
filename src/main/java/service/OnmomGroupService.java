@@ -15,8 +15,9 @@ import repository.group.UserNicknameRepository;
 import repository.user.UserRepository;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.time.LocalDate;
-import java.util.UUID;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +26,6 @@ public class OnmomGroupService {
     private final UserRepository userRepository;
     private final UserNicknameRepository userNicknameRepository;
     private final S3Service s3Service;
-    private final EmailService emailService;
 
 
 
@@ -103,16 +103,23 @@ public class OnmomGroupService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid group ID"));
 
         // 초대 코드 생성
-        String inviteCode = UUID.randomUUID().toString();
+        String inviteCode = generateInviteCode(5); // 5글자의 초대 코드 생성
         group.setInvitationCode(inviteCode);  // 초대 코드 설정
         groupRepository.save(group);  // 그룹 저장
 
-        // 이메일 전송
-        String subject = "온맘 그룹 초대 코드입니다.";
-        String content = "초대 코드는 다음과 같습니다: " + inviteCode;
-        emailService.sendEmail(email, subject, content);
-
         return inviteCode;
+    }
+
+    private String generateInviteCode(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random = new SecureRandom();
+        StringBuilder inviteCode = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            inviteCode.append(characters.charAt(random.nextInt(characters.length())));
+        }
+
+        return inviteCode.toString();
     }
 
 }
