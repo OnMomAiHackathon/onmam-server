@@ -2,5 +2,6 @@
 
 서버 URL : http://15.165.54.182:8080/
 
-### ERD
-![eeerd](https://github.com/user-attachments/assets/177fec31-d7d7-4571-8765-3908d49350a7)
+### ERD(08/25 Updated)
+![0825erd](https://github.com/user-attachments/assets/8d8cf136-d6ad-475f-8e8c-f8954cd45322)
+
