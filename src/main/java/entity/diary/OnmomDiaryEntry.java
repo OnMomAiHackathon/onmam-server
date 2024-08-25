@@ -38,4 +38,8 @@ public class OnmomDiaryEntry {
         this.audioURL = audioURL;
         this.createdAt = createdAt;
     }
+
+    public void updateAudioUrl(String audioUrl) {
+        this.audioURL = audioUrl;
+    }
 }

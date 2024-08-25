@@ -10,4 +10,6 @@ public class LoginResponse {
     private String kakaoId;
     private String email;
     private String name;
+    private Long groupId;
+
 }

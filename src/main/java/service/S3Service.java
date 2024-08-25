@@ -10,6 +10,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 @Service
@@ -58,4 +59,17 @@ public class S3Service {
         return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, fileName);
     }
 
+    public String uploadAudioFile(byte[] audioData, String groupId) {
+        String fileName = "audio/" + groupId + "/" + System.currentTimeMillis() + ".mp3";
+
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .contentType("audio/mpeg")
+                .build();
+
+        s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(new ByteArrayInputStream(audioData), audioData.length));
+
+        return getFileUrl(fileName);
+    }
 }
