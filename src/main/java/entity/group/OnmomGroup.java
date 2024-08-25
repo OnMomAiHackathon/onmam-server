@@ -40,4 +40,8 @@ public class OnmomGroup {
         this.users = users;
         this.diaryEntries = diaryEntries;
     }
+
+    public void setGroupName(String groupName){
+        this.groupName = groupName;
+    }
 }

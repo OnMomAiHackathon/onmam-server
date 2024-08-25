@@ -1,6 +1,7 @@
 package entity.user;
 
 import entity.group.OnmomGroup;
+import entity.group.UserNickname;
 import entity.medication.OnmomMedication;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -39,6 +40,15 @@ public class OnmomUser {
     // 하나의 유저는 여러 복약 정보를 가질 수 있다.
     @OneToMany(mappedBy = "user")
     private Set<OnmomMedication> medications;
+
+
+    // 사용자가 설정한 닉네임들
+    @OneToMany(mappedBy = "user")
+    private Set<UserNickname> nicknamesSetByUser;
+
+    // 사용자가 타인에게 설정된 닉네임들
+    @OneToMany(mappedBy = "targetUser")
+    private Set<UserNickname> nicknamesSetOnUser;
 
 
     @Builder
