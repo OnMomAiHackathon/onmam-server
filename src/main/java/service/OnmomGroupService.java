@@ -16,6 +16,7 @@ import repository.user.UserRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,9 @@ public class OnmomGroupService {
     private final UserRepository userRepository;
     private final UserNicknameRepository userNicknameRepository;
     private final S3Service s3Service;
+    private final EmailService emailService;
+
+
 
     // 그룹 생성!
     public GroupCreateResponse createGroup(GroupCreateRequest groupRequest) {
@@ -90,6 +94,25 @@ public class OnmomGroupService {
         return GroupMemberUpdateResponse.builder()
                 .message("그룹 멤버 수정 성공")
                 .build();
+    }
+
+
+    // 초대 코드 생성 및 전송
+    public String sendInvite(Long groupId, String email) {
+        OnmomGroup group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid group ID"));
+
+        // 초대 코드 생성
+        String inviteCode = UUID.randomUUID().toString();
+        group.setInvitationCode(inviteCode);  // 초대 코드 설정
+        groupRepository.save(group);  // 그룹 저장
+
+        // 이메일 전송
+        String subject = "온맘 그룹 초대 코드입니다.";
+        String content = "초대 코드는 다음과 같습니다: " + inviteCode;
+        emailService.sendEmail(email, subject, content);
+
+        return inviteCode;
     }
 
 }
