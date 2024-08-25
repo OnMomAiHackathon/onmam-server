@@ -44,4 +44,8 @@ public class OnmomGroup {
     public void setGroupName(String groupName){
         this.groupName = groupName;
     }
+
+    public void setInvitationCode(String invitationCode){
+        this.invitationCode = invitationCode;
+    }
 }
