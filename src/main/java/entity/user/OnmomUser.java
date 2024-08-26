@@ -1,6 +1,7 @@
 package entity.user;
 
 import entity.group.OnmomGroup;
+import entity.group.UserNickname;
 import entity.medication.OnmomMedication;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -41,6 +42,15 @@ public class OnmomUser {
     private Set<OnmomMedication> medications;
 
 
+    // 사용자가 설정한 닉네임들
+    @OneToMany(mappedBy = "user")
+    private Set<UserNickname> nicknamesSetByUser;
+
+    // 사용자가 타인에게 설정된 닉네임들
+    @OneToMany(mappedBy = "targetUser")
+    private Set<UserNickname> nicknamesSetOnUser;
+
+
     @Builder
     public OnmomUser(String email, String password, String name, LocalDate birthdate, String phone, String kakaoId, String role, OnmomGroup group) {
         this.email = email;
@@ -50,6 +60,11 @@ public class OnmomUser {
         this.phone = phone;
         this.kakaoId = kakaoId;
         this.role = role;
+        this.group = group;
+    }
+
+    // 그룹생성시 set Group!
+    public void setGroup(OnmomGroup group) {
         this.group = group;
     }
 }

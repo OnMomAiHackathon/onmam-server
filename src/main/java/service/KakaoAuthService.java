@@ -15,13 +15,14 @@ import org.springframework.web.client.RestTemplate;
 import repository.user.UserRepository;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class KakaoAuthService {
     private final UserRepository userRepository;
 
-    public LoginResponse kakaoLogin(String accessToken) {
+    public Optional<LoginResponse> kakaoLogin(String accessToken) {
         // 카카오 API를 통해 사용자 정보 가져오기
         OnmomUser user = getKakaoUser(accessToken);
 
@@ -32,7 +33,7 @@ public class KakaoAuthService {
         }
 
         // 로그인 성공 시 사용자 정보 반환
-        return new LoginResponse(user.getUserId(), user.getKakaoId(), user.getEmail(), user.getName());
+        return Optional.of(new LoginResponse(user.getUserId(), user.getKakaoId(), user.getEmail(), user.getName(), user.getGroup().getGroupId()));
     }
 
     private OnmomUser getKakaoUser(String accessToken) {
