@@ -9,6 +9,5 @@ import org.springframework.web.multipart.MultipartFile;
 public class DiaryEntryRequest {
     private Long groupId;
     private String textContent;
-    private MultipartFile imageFile;
     private MultipartFile audioFile; // ************ 웹소켓으로 구현
 }

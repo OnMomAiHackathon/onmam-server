@@ -18,14 +18,21 @@ import java.util.List;
 public class DiaryController {
     private final DiaryService diaryService;
 
+
+    @PostMapping("/create")
+    public ResponseEntity<DiaryEntryResponse> createDiaryEntry(@ModelAttribute DiaryEntryRequest request) throws IOException {
+        DiaryEntryResponse response = diaryService.createDiaryEntry(request);
+        return ResponseEntity.ok(response);
+    }
+
     // 그룹별 이미지 및 오디오 파일 저장
     // *********** 테스트 필요 ***********
-    @PostMapping("/upload")
-    public ResponseEntity<DiaryEntryResponse> uploadFiles(@ModelAttribute DiaryEntryRequest request) throws IOException {
-        // DiaryService를 통해 그림일기 저장
-        DiaryEntryResponse diaryEntryResponse = diaryService.saveDiaryEntry(request);
-        return ResponseEntity.ok(diaryEntryResponse);
-    }
+//    @PostMapping("/upload")
+//    public ResponseEntity<DiaryEntryResponse> uploadFiles(@ModelAttribute DiaryEntryRequest request) throws IOException {
+//        // DiaryService를 통해 그림일기 저장
+//        DiaryEntryResponse diaryEntryResponse = diaryService.saveDiaryEntry(request);
+//        return ResponseEntity.ok(diaryEntryResponse);
+//    }
 
     // 특정 그룹의 이미지 및 오디오 URL들을 가져오기
     // *********** 테스트 필요 ***********
