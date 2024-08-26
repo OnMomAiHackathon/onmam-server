@@ -2,11 +2,13 @@ package service;
 
 import dto.diary.DiaryEntryRequest;
 import dto.diary.DiaryEntryResponse;
+import entity.diary.OnmomDailyAnswer;
 import entity.diary.OnmomDiaryEntry;
 import entity.group.OnmomGroup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import repository.diary.DiaryEntryRepository;
+import repository.diary.OnmomDailyAnswerRepository;
 import repository.group.GroupRepository;
 
 import java.io.IOException;
@@ -20,6 +22,7 @@ public class DiaryService {
     private final S3Service s3Service;
     private final DiaryEntryRepository diaryEntryRepository;
     private final GroupRepository groupRepository;
+    private final OnmomDailyAnswerRepository dailyAnswerRepository;
 
     public DiaryEntryResponse saveDiaryEntry(DiaryEntryRequest request) throws IOException {
         OnmomGroup group = groupRepository.findById(request.getGroupId())
@@ -86,5 +89,22 @@ public class DiaryService {
 
         diaryEntry.updateAudioUrl(audioUrl);
         diaryEntryRepository.save(diaryEntry);
+    }
+
+    // 질문과 답변 저장
+    public void saveAnswer(Long diaryEntryId, String questionText, String answer) {
+        // diaryEntryId로 다이어리 항목을 찾음
+        OnmomDiaryEntry diaryEntry = diaryEntryRepository.findById(diaryEntryId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 다이어리 ID입니다."));
+
+        // 새로운 일상 답변 엔트리 생성
+        OnmomDailyAnswer dailyAnswer = OnmomDailyAnswer.builder()
+                .diaryEntry(diaryEntry)
+                .questionText(questionText)
+                .answerText(answer)
+                .createdAt(LocalDate.now())
+                .build();
+
+        dailyAnswerRepository.save(dailyAnswer);
     }
 }

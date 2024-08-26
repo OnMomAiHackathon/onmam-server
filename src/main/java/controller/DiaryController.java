@@ -2,6 +2,8 @@ package controller;
 
 import dto.diary.DiaryEntryRequest;
 import dto.diary.DiaryEntryResponse;
+import dto.diary.question.AnswerRequest;
+import dto.diary.question.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,5 +41,12 @@ public class DiaryController {
     public ResponseEntity<DiaryEntryResponse> getDiaryEntryMedia(@PathVariable Long diaryEntryId) {
         DiaryEntryResponse diaryEntryResponse = diaryService.getDiaryEntry(diaryEntryId);
         return ResponseEntity.ok(diaryEntryResponse);
+    }
+
+    // 질문에 대한 답변 받기
+    @PostMapping("/entries/{diaryEntryId}/answer")
+    public ResponseEntity<?> receiveAnswer(@PathVariable Long diaryEntryId, @RequestBody AnswerRequest answerRequest) {
+        diaryService.saveAnswer(diaryEntryId, answerRequest.getQuestion(), answerRequest.getAnswer());
+        return ResponseEntity.ok(new ResponseMessage("다이어리 질문에 대한 답변이 성공적으로 전달되었습니다."));
     }
 }
