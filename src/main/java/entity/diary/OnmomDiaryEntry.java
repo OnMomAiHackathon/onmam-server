@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 // 그림일기의 기본 정보를 저장하는 엔티티
 @Entity
@@ -28,6 +29,10 @@ public class OnmomDiaryEntry {
     private String imageURL; // 그림일기의 이미지 URL
     private String audioURL; // 음성 파일의 URL
     private LocalDate createdAt; // 그림일기 생성 날짜
+
+    // 하나의 다이어리 항목은 여러 일상 답변을 가질 수 있다.
+    @OneToMany(mappedBy = "diaryEntry", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OnmomDailyAnswer> dailyAnswers;
 
     @Builder
     public OnmomDiaryEntry(Long diaryEntryId, OnmomGroup group, String textContent, String imageURL, String audioURL, LocalDate createdAt) {
