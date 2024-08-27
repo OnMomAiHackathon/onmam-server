@@ -9,5 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class DiaryEntryRequest {
     private Long groupId;
     private String textContent;
-    private MultipartFile audioFile; // ************ 웹소켓으로 구현
+    private String question1;  // 첫 번째 질문
+    private String answer1;    // 첫 번째 답변
+    private String question2;  // 두 번째 질문
+    private String answer2;    // 두 번째 답변
+    private MultipartFile audioFile;
 }
