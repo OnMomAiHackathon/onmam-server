@@ -24,24 +24,35 @@ public class OnmomDiaryEntry {
     @JoinColumn(name = "groupId")
     private OnmomGroup group;
 
+    private String title;
     @Column(columnDefinition = "TEXT")
     private String textContent; // 그림일기의 텍스트 내용
     private String imageURL; // 그림일기의 이미지 URL
     private String audioURL; // 음성 파일의 URL
+
+    @Column(updatable = false)
     private LocalDate createdAt; // 그림일기 생성 날짜
+
+
 
     // 하나의 다이어리 항목은 여러 일상 답변을 가질 수 있다.
     @OneToMany(mappedBy = "diaryEntry", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OnmomDailyAnswer> dailyAnswers;
 
     @Builder
-    public OnmomDiaryEntry(Long diaryEntryId, OnmomGroup group, String textContent, String imageURL, String audioURL, LocalDate createdAt) {
+    public OnmomDiaryEntry(Long diaryEntryId, String title, OnmomGroup group, String textContent, String imageURL, String audioURL, LocalDate createdAt) {
+        this.title = title;
         this.diaryEntryId = diaryEntryId;
         this.group = group;
         this.textContent = textContent;
         this.imageURL = imageURL;
         this.audioURL = audioURL;
         this.createdAt = createdAt;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDate.now();
     }
 
     public void updateAudioUrl(String audioUrl) {

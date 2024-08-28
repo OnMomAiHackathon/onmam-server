@@ -152,10 +152,10 @@ public class DiaryService {
         // OnmomDiaryEntry 생성 (이미지 URL은 나중에 DALL·E로 생성)
         OnmomDiaryEntry diaryEntry = OnmomDiaryEntry.builder()
                 .group(group)
+                .title(request.getTitle())
                 .textContent(request.getTextContent())
                 .imageURL("") // 이미지 URL은 나중에 DALL·E로 생성
                 .audioURL(audioUrl)
-                .createdAt(LocalDate.now())
                 .build();
 
         // 다이어리 엔트리 저장
@@ -168,7 +168,6 @@ public class DiaryService {
                     .diaryEntry(diaryEntry)
                     .questionText(request.getQuestion1())
                     .answerText(request.getAnswer1())
-                    .createdAt(LocalDate.now())
                     .build();
             dailyAnswers.add(dailyAnswer1);
         }
@@ -178,7 +177,6 @@ public class DiaryService {
                     .diaryEntry(diaryEntry)
                     .questionText(request.getQuestion2())
                     .answerText(request.getAnswer2())
-                    .createdAt(LocalDate.now())
                     .build();
             dailyAnswers.add(dailyAnswer2);
         }
@@ -197,9 +195,11 @@ public class DiaryService {
 
         return DiaryEntryResponse.builder()
                 .diaryEntryId(diaryEntry.getDiaryEntryId())
+                .title(diaryEntry.getTitle())
                 .textContent(diaryEntry.getTextContent())
                 .imageUrl(diaryEntry.getImageURL())
                 .audioUrl(diaryEntry.getAudioURL())
+                .createdAt(diaryEntry.getCreatedAt())
                 .dailyAnswers(dailyAnswerResponses)  // 추가된 부분
                 .build();
     }
