@@ -1,11 +1,9 @@
 package controller;
 
-import dto.group.GroupCreateRequest;
-import dto.group.GroupCreateResponse;
-import dto.group.GroupMemberUpdateRequest;
-import dto.group.GroupMemberUpdateResponse;
+import dto.group.*;
 import dto.group.invite.InviteAcceptRequest;
 import dto.group.invite.InviteAcceptResponse;
+import entity.group.OnmomGroup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +11,7 @@ import service.OnmomGroupService;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -58,4 +57,36 @@ public class GroupController {
         InviteAcceptResponse response = onmomGroupService.acceptInvite(groupId, request);
         return ResponseEntity.ok(response);
     }
+
+    // 그룹 삭제
+    @PostMapping("/{groupId}/delete")
+    public ResponseEntity<Map<String,String>> deleteGroup(@PathVariable Long groupId){
+        onmomGroupService.deleteGroup(groupId);
+        Map<String,String> response = new HashMap<>();
+        response.put("message","그룹이 성공적으로 삭제되었습니다.");
+        return ResponseEntity.ok(response);
+    }
+
+    // 특정 그룹 조회
+    @GetMapping("/{groupId}")
+    public ResponseEntity<GroupFindByIdResponse> findGroupById(@PathVariable Long groupId){
+        OnmomGroup group = onmomGroupService.findGroupById(groupId);
+
+        List<GroupUserResponse> members = group.getUsers().stream()
+                .map(user -> GroupUserResponse.builder()
+                        .userId(user.getUserId())
+                        .name(user.getName())
+                        .role(user.getRole())
+                        .build()
+                ).toList();
+
+        GroupFindByIdResponse response = GroupFindByIdResponse.builder()
+                .groupId(group.getGroupId())
+                .groupName(group.getGroupName())
+                .members(members)
+                .build();
+        return ResponseEntity.ok(response);
+
+    }
+
 }

@@ -38,16 +38,16 @@ public class OnmomUser {
     private OnmomGroup group;
 
     // 하나의 유저는 여러 복약 정보를 가질 수 있다.
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<OnmomMedication> medications;
 
 
     // 사용자가 설정한 닉네임들
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<UserNickname> nicknamesSetByUser;
 
     // 사용자가 타인에게 설정된 닉네임들
-    @OneToMany(mappedBy = "targetUser")
+    @OneToMany(mappedBy = "targetUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<UserNickname> nicknamesSetOnUser;
 
 
