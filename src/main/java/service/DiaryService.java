@@ -15,6 +15,8 @@ import repository.group.GroupRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,29 +57,6 @@ public class DiaryService {
 //                .build();
 //    }
 
-    public DiaryEntryResponse getDiaryEntry(Long diaryEntryId) {
-        OnmomDiaryEntry diaryEntry = diaryEntryRepository.findById(diaryEntryId)
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 다이어리 ID입니다."));
-
-        // 질문과 답변을 DailyAnswerResponse로 변환
-        List<DailyAnswerResponse> dailyAnswerResponses = diaryEntry.getDailyAnswers().stream()
-                .map(answer -> DailyAnswerResponse.builder()
-                        .id(answer.getId())
-                        .questionText(answer.getQuestionText())
-                        .answerText(answer.getAnswerText())
-                        .createdAt(answer.getCreatedAt())
-                        .build())
-                .collect(Collectors.toList());
-
-        // 응답 생성
-        return DiaryEntryResponse.builder()
-                .diaryEntryId(diaryEntry.getDiaryEntryId())
-                .textContent(diaryEntry.getTextContent())
-                .imageUrl(diaryEntry.getImageURL())
-                .audioUrl(diaryEntry.getAudioURL())
-                .dailyAnswers(dailyAnswerResponses)
-                .build();
-    }
 
 //    public DiaryEntryResponse getDiaryEntry(Long diaryEntryId) {
 //        OnmomDiaryEntry diaryEntry = diaryEntryRepository.findById(diaryEntryId)
@@ -152,10 +131,10 @@ public class DiaryService {
         // OnmomDiaryEntry 생성 (이미지 URL은 나중에 DALL·E로 생성)
         OnmomDiaryEntry diaryEntry = OnmomDiaryEntry.builder()
                 .group(group)
+                .title(request.getTitle())
                 .textContent(request.getTextContent())
                 .imageURL("") // 이미지 URL은 나중에 DALL·E로 생성
                 .audioURL(audioUrl)
-                .createdAt(LocalDate.now())
                 .build();
 
         // 다이어리 엔트리 저장
@@ -168,7 +147,6 @@ public class DiaryService {
                     .diaryEntry(diaryEntry)
                     .questionText(request.getQuestion1())
                     .answerText(request.getAnswer1())
-                    .createdAt(LocalDate.now())
                     .build();
             dailyAnswers.add(dailyAnswer1);
         }
@@ -178,7 +156,6 @@ public class DiaryService {
                     .diaryEntry(diaryEntry)
                     .questionText(request.getQuestion2())
                     .answerText(request.getAnswer2())
-                    .createdAt(LocalDate.now())
                     .build();
             dailyAnswers.add(dailyAnswer2);
         }
@@ -197,13 +174,79 @@ public class DiaryService {
 
         return DiaryEntryResponse.builder()
                 .diaryEntryId(diaryEntry.getDiaryEntryId())
+                .title(diaryEntry.getTitle())
                 .textContent(diaryEntry.getTextContent())
                 .imageUrl(diaryEntry.getImageURL())
                 .audioUrl(diaryEntry.getAudioURL())
+                .createdAt(diaryEntry.getCreatedAt())
                 .dailyAnswers(dailyAnswerResponses)  // 추가된 부분
                 .build();
     }
 
 
+    public DiaryEntryResponse getDiaryEntry(Long diaryEntryId) {
+        OnmomDiaryEntry diaryEntry = diaryEntryRepository.findById(diaryEntryId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 다이어리 ID입니다."));
 
+        // 질문과 답변을 DailyAnswerResponse로 변환
+        List<DailyAnswerResponse> dailyAnswerResponses = diaryEntry.getDailyAnswers().stream()
+                .map(answer -> DailyAnswerResponse.builder()
+                        .id(answer.getId())
+                        .questionText(answer.getQuestionText())
+                        .answerText(answer.getAnswerText())
+                        .createdAt(answer.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+
+        // 응답 생성
+        return DiaryEntryResponse.builder()
+                .diaryEntryId(diaryEntry.getDiaryEntryId())
+                .textContent(diaryEntry.getTextContent())
+                .imageUrl(diaryEntry.getImageURL())
+                .audioUrl(diaryEntry.getAudioURL())
+                .dailyAnswers(dailyAnswerResponses)
+                .build();
+    }
+
+    public List<DiaryEntryResponse> getMonthlyDiaryEntries(Long diaryId, int year, int month) {
+        // YearMonth를 이용해 해당 연도와 월을 표현
+        YearMonth yearMonth = YearMonth.of(year, month);
+
+        // 해당 월의 첫 번째 날과 마지막 날을 계산
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.atEndOfMonth();
+
+        // 주어진 다이어리 ID로 그룹 조회
+        OnmomGroup group = groupRepository.findById(diaryId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹 ID입니다."));
+
+        // 해당 연월에 속하는 다이어리 엔트리들 조회
+        List<OnmomDiaryEntry> diaryEntries = diaryEntryRepository.findByGroupAndCreatedAtBetween(group, startDate, endDate);
+
+        // 다이어리 엔트리들을 응답 객체로 변환
+        return diaryEntries.stream()
+                .map(entry -> {
+                    // 질문과 답변을 DailyAnswerResponse로 변환
+                    List<DailyAnswerResponse> dailyAnswerResponses = entry.getDailyAnswers().stream()
+                            .map(answer -> DailyAnswerResponse.builder()
+                                    .id(answer.getId())
+                                    .questionText(answer.getQuestionText())
+                                    .answerText(answer.getAnswerText())
+                                    .createdAt(answer.getCreatedAt())
+                                    .build())
+                            .collect(Collectors.toList());
+
+                    // DiaryEntryResponse 객체 생성
+                    return DiaryEntryResponse.builder()
+                            .diaryEntryId(entry.getDiaryEntryId())
+                            .title(entry.getTitle())
+                            .textContent(entry.getTextContent())
+                            .imageUrl(entry.getImageURL())
+                            .audioUrl(entry.getAudioURL())
+                            .createdAt(entry.getCreatedAt())
+                            .dailyAnswers(dailyAnswerResponses)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
 }

@@ -32,6 +32,17 @@ public class DiaryController {
         DiaryEntryResponse response = diaryService.getDiaryEntry(diaryEntryId);
         return ResponseEntity.ok(response);
     }
+
+    //다이어리 조회
+    @GetMapping("/{diaryId}/entries/{year}/{month}")
+    public ResponseEntity<List<DiaryEntryResponse>> getMonthlyDiaryEntries(
+            @PathVariable Long diaryId,
+            @PathVariable int year,
+            @PathVariable int month) {
+
+        List<DiaryEntryResponse> response = diaryService.getMonthlyDiaryEntries(diaryId, year, month);
+        return ResponseEntity.ok(response);
+    }
     // 그룹별 이미지 및 오디오 파일 저장
     // *********** 테스트 필요 ***********
 //    @PostMapping("/upload")

@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -11,8 +12,10 @@ import java.util.List;
 @Builder
 public class DiaryEntryResponse {
     private Long diaryEntryId;
+    private String title;
     private String textContent;
     private String imageUrl;
     private String audioUrl;
     private List<DailyAnswerResponse> dailyAnswers;
+    private LocalDate createdAt;
 }

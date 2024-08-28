@@ -23,6 +23,8 @@ public class OnmomDailyAnswer {
 
     private String questionText; // 질문 내용
     private String answerText; // 답변 내용
+
+    @Column(updatable = false)
     private LocalDate createdAt; // 답변 생성 날짜
 
     @Builder
@@ -31,5 +33,10 @@ public class OnmomDailyAnswer {
         this.questionText = questionText;
         this.answerText = answerText;
         this.createdAt = createdAt;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDate.now();
     }
 }
