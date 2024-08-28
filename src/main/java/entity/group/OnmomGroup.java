@@ -19,16 +19,17 @@ public class OnmomGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long groupId;
+    private String groupName; //그룹이름
+    private String invitationCode; //초대코드
+
     private LocalDate createdAt;
-    private String invitationCode;
-    private String groupName;
 
     // 한 그룹은 N명의 유저로 구성될 수 있다
     @OneToMany(mappedBy = "group")
     private Set<OnmomUser> users;
 
     // 한 그룹은 여러 다이어리를 가질 수 있다.
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<OnmomDiaryEntry> diaryEntries;
 
     @Builder

@@ -9,6 +9,7 @@ import dto.group.invite.InviteAcceptResponse;
 import entity.group.OnmomGroup;
 import entity.group.UserNickname;
 import entity.user.OnmomUser;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +29,6 @@ public class OnmomGroupService {
     private final UserRepository userRepository;
     private final UserNicknameRepository userNicknameRepository;
     private final S3Service s3Service;
-
 
 
     // 그룹 생성!
@@ -52,7 +52,6 @@ public class OnmomGroupService {
                 .message("그룹 생성 성공")
                 .build();
     }
-
 
 
     // 그룹 멤버 수정 로직
@@ -150,5 +149,25 @@ public class OnmomGroupService {
         return InviteAcceptResponse.builder()
                 .message("초대가 성공적으로 수락되었습니다.")
                 .build();
+    }
+
+    @Transactional
+    public void deleteGroup(Long groupId) {
+        OnmomGroup group = groupRepository.findById(groupId).orElseThrow(()
+                -> new IllegalArgumentException("유효하지 않은 그룹아이디입니다."));
+
+        //해당 groupId를 가지고 있는 유저들의 그룹을 null로 설정
+        userRepository.findByGroup(group)
+                .forEach(onmomUser -> {
+                    onmomUser.setGroup(null);
+                    userRepository.save(onmomUser);
+                });
+
+        //그룹 삭제
+        groupRepository.deleteById(groupId);
+    }
+
+    public OnmomGroup findGroupById(Long groupId) {
+        return groupRepository.findById(groupId).orElseThrow(()-> new IllegalArgumentException("유효하지 않은 그룹아이디입니다."));
     }
 }
