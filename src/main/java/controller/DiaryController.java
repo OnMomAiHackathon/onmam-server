@@ -26,14 +26,14 @@ public class DiaryController {
         return ResponseEntity.ok(response);
     }
 
-    //다이어리 조회
+    //특정 다이어리 조회
     @GetMapping("/{diaryEntryId}")
     public ResponseEntity<DiaryEntryResponse> getDiaryEntry(@PathVariable Long diaryEntryId) {
         DiaryEntryResponse response = diaryService.getDiaryEntry(diaryEntryId);
         return ResponseEntity.ok(response);
     }
 
-    //다이어리 조회
+    //다이어리 월별 조회
     @GetMapping("/{diaryId}/entries/{year}/{month}")
     public ResponseEntity<List<DiaryEntryResponse>> getMonthlyDiaryEntries(
             @PathVariable Long diaryId,
@@ -43,6 +43,14 @@ public class DiaryController {
         List<DiaryEntryResponse> response = diaryService.getMonthlyDiaryEntries(diaryId, year, month);
         return ResponseEntity.ok(response);
     }
+
+    //모든 다이어리 조회
+    @GetMapping
+    public ResponseEntity<List<DiaryEntryResponse>> getAllDiaryEntries() {
+        List<DiaryEntryResponse> diaryEntries = diaryService.getAllDiaryEntries();
+        return ResponseEntity.ok(diaryEntries);
+    }
+
     // 그룹별 이미지 및 오디오 파일 저장
     // *********** 테스트 필요 ***********
 //    @PostMapping("/upload")
