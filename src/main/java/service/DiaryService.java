@@ -71,8 +71,6 @@ public class DiaryService {
 //    }
 
 
-
-
     // 특정 그룹의 모든 그림일기의 이미지 및 오디오 URL 가져오기
     public List<DiaryEntryResponse> getGroupMedia(Long groupId) {
         OnmomGroup group = groupRepository.findById(groupId)
@@ -117,7 +115,7 @@ public class DiaryService {
         dailyAnswerRepository.save(dailyAnswer);
     }
 
-    public DiaryEntryResponse  createDiaryEntry(DiaryEntryRequest request) throws IOException {
+    public DiaryEntryResponse createDiaryEntry(DiaryEntryRequest request) throws IOException {
         // 그룹 조회
         OnmomGroup group = groupRepository.findById(request.getGroupId())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹 ID입니다."));
@@ -249,4 +247,36 @@ public class DiaryService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public List<DiaryEntryResponse> getAllDiaryEntries() {
+        // 모든 다이어리 엔트리를 조회
+        List<OnmomDiaryEntry> diaryEntries = diaryEntryRepository.findAll();
+
+        // 조회된 엔트리들을 DiaryEntryResponse로 변환
+        return diaryEntries.stream()
+                .map(entry -> {
+                    // 질문과 답변을 DailyAnswerResponse로 변환
+                    List<DailyAnswerResponse> dailyAnswerResponses = entry.getDailyAnswers().stream()
+                            .map(answer -> DailyAnswerResponse.builder()
+                                    .id(answer.getId())
+                                    .questionText(answer.getQuestionText())
+                                    .answerText(answer.getAnswerText())
+                                    .createdAt(answer.getCreatedAt())
+                                    .build())
+                            .collect(Collectors.toList());
+
+                    // DiaryEntryResponse 객체 생성
+                    return DiaryEntryResponse.builder()
+                            .diaryEntryId(entry.getDiaryEntryId())
+                            .title(entry.getTitle())
+                            .textContent(entry.getTextContent())
+                            .imageUrl(entry.getImageURL())
+                            .audioUrl(entry.getAudioURL())
+                            .createdAt(entry.getCreatedAt())
+                            .dailyAnswers(dailyAnswerResponses)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
 }
