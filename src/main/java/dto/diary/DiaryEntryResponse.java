@@ -13,7 +13,9 @@ import java.util.List;
 public class DiaryEntryResponse {
     private Long diaryEntryId;
     private String title;
-    private String textContent;
+    private String translatedContent;
+    private boolean medicationStatus;
+    private String summaryContent;
     private String imageUrl;
     private String audioUrl;
     private List<DailyAnswerResponse> dailyAnswers;

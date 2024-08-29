@@ -1,5 +1,6 @@
 package service;
 
+import dto.ai.AIDiaryResponse;
 import dto.diary.DailyAnswerResponse;
 import dto.diary.DiaryEntryRequest;
 import dto.diary.DiaryEntryResponse;
@@ -8,7 +9,6 @@ import entity.diary.OnmomDiaryEntry;
 import entity.group.OnmomGroup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import repository.diary.DiaryEntryRepository;
 import repository.diary.OnmomDailyAnswerRepository;
 import repository.group.GroupRepository;
@@ -16,7 +16,6 @@ import repository.group.GroupRepository;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,47 +28,89 @@ public class DiaryService {
     private final GroupRepository groupRepository;
     private final OnmomDailyAnswerRepository dailyAnswerRepository;
 
-//    public DiaryEntryResponse saveDiaryEntry(DiaryEntryRequest request) throws IOException {
-//        OnmomGroup group = groupRepository.findById(request.getGroupId())
-//                .orElseThrow(() -> new IllegalArgumentException("Invalid group ID"));
-//
-//        // 이미지 및 오디오 파일을 S3에 업로드하고 URL을 가져오기
-////        String imageUrl = s3Service.uploadFile(request.getImageFile(), request.getGroupId().toString());
-//        String audioUrl = s3Service.uploadFile(request.getAudioFile(), request.getGroupId().toString());
-//
-//        // OnmomDiaryEntry 엔티티 생성 및 저장
-//        OnmomDiaryEntry diaryEntry = OnmomDiaryEntry.builder()
-//                .group(group)
-//                .textContent(request.getTextContent())
-////                .imageURL(imageUrl)
-//                .audioURL(audioUrl)
-//                .createdAt(LocalDate.now())
-//                .build();
-//
-//        diaryEntryRepository.save(diaryEntry);
-//
-//        // DiaryEntryResponse DTO 생성 및 반환
-//        return DiaryEntryResponse.builder()
-//                .diaryEntryId(diaryEntry.getDiaryEntryId())
-//                .textContent(diaryEntry.getTextContent())
-//                .imageUrl(diaryEntry.getImageURL())
-//                .audioUrl(diaryEntry.getAudioURL())
-//                .build();
-//    }
+    // 다이어리 엔트리 생성
+    public DiaryEntryResponse createDiaryEntry(DiaryEntryRequest request, AIDiaryResponse aiDiaryResponse) throws IOException {
+        // 그룹 조회
+        OnmomGroup group = groupRepository.findById(request.getGroupId())
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹 ID입니다."));
 
+        // 오디오 파일을 byte[]로 변환
+        byte[] audioData = request.getAudioFile().getBytes();
 
-//    public DiaryEntryResponse getDiaryEntry(Long diaryEntryId) {
-//        OnmomDiaryEntry diaryEntry = diaryEntryRepository.findById(diaryEntryId)
-//                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 다이어리 아이디입니다."));
-//
-//        return DiaryEntryResponse.builder()
-//                .diaryEntryId(diaryEntry.getDiaryEntryId())
-//                .textContent(diaryEntry.getTextContent())
-//                .imageUrl(diaryEntry.getImageURL())
-//                .audioUrl(diaryEntry.getAudioURL())
-//                .build();
-//    }
+        // S3에 오디오 파일 업로드
+        String audioUrl = s3Service.uploadAudioFile(audioData, request.getGroupId().toString());
 
+        // OnmomDiaryEntry 생성
+        OnmomDiaryEntry diaryEntry = OnmomDiaryEntry.builder()
+                .group(group)
+                .title(aiDiaryResponse.getSummary()) // AI 요약된 내용을 제목으로 설정
+                .translatedText(aiDiaryResponse.getTranslatedContent())
+                .summaryText(aiDiaryResponse.getSummary())
+                .imageURL("") // 이미지 URL은 나중에 DALL·E로 생성
+                .audioURL(audioUrl)
+                .medicationStatus(false) // 기본값으로 설정하거나 AI 응답을 기반으로 설정할 수 있습니다.
+                .build();
+
+        // 다이어리 엔트리 저장
+        diaryEntry = diaryEntryRepository.save(diaryEntry);
+
+        // 질문과 답변 저장 (생략 가능)
+        List<OnmomDailyAnswer> dailyAnswers = new ArrayList<>();
+        // 질문과 답변을 저장할 로직이 있으면 추가
+
+        dailyAnswerRepository.saveAll(dailyAnswers);
+
+        // 응답 생성 (질문과 답변을 포함)
+        List<DailyAnswerResponse> dailyAnswerResponses = dailyAnswers.stream()
+                .map(answer -> DailyAnswerResponse.builder()
+                        .id(answer.getId())
+                        .questionText(answer.getQuestionText())
+                        .answerText(answer.getAnswerText())
+                        .createdAt(answer.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+
+        return DiaryEntryResponse.builder()
+                .diaryEntryId(diaryEntry.getDiaryEntryId())
+                .title(diaryEntry.getTitle())
+                .translatedContent(diaryEntry.getTranslatedText())
+                .summaryContent(diaryEntry.getSummaryText())
+                .imageUrl(diaryEntry.getImageURL())
+                .audioUrl(diaryEntry.getAudioURL())
+                .medicationStatus(diaryEntry.isMedicationStatus())
+                .createdAt(diaryEntry.getCreatedAt())
+                .dailyAnswers(dailyAnswerResponses)
+                .build();
+    }
+
+    // 특정 다이어리 엔트리 가져오기
+    public DiaryEntryResponse getDiaryEntry(Long diaryEntryId) {
+        OnmomDiaryEntry diaryEntry = diaryEntryRepository.findById(diaryEntryId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 다이어리 ID입니다."));
+
+        // 질문과 답변을 DailyAnswerResponse로 변환
+        List<DailyAnswerResponse> dailyAnswerResponses = diaryEntry.getDailyAnswers().stream()
+                .map(answer -> DailyAnswerResponse.builder()
+                        .id(answer.getId())
+                        .questionText(answer.getQuestionText())
+                        .answerText(answer.getAnswerText())
+                        .createdAt(answer.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+
+        // 응답 생성
+        return DiaryEntryResponse.builder()
+                .diaryEntryId(diaryEntry.getDiaryEntryId())
+                .title(diaryEntry.getTitle())
+                .translatedContent(diaryEntry.getTranslatedText())
+                .summaryContent(diaryEntry.getSummaryText())
+                .imageUrl(diaryEntry.getImageURL())
+                .audioUrl(diaryEntry.getAudioURL())
+                .medicationStatus(diaryEntry.isMedicationStatus())
+                .createdAt(diaryEntry.getCreatedAt())
+                .dailyAnswers(dailyAnswerResponses)
+                .build();
+    }
 
     // 특정 그룹의 모든 그림일기의 이미지 및 오디오 URL 가져오기
     public List<DiaryEntryResponse> getGroupMedia(Long groupId) {
@@ -81,13 +122,16 @@ public class DiaryService {
         return diaryEntries.stream()
                 .map(entry -> DiaryEntryResponse.builder()
                         .diaryEntryId(entry.getDiaryEntryId())
-                        .textContent(entry.getTextContent())
+                        .title(entry.getTitle())
+                        .translatedContent(entry.getTranslatedText())
+                        .summaryContent(entry.getSummaryText())
                         .imageUrl(entry.getImageURL())
                         .audioUrl(entry.getAudioURL())
+                        .medicationStatus(entry.isMedicationStatus())
+                        .createdAt(entry.getCreatedAt())
                         .build())
                 .collect(Collectors.toList());
     }
-
 
     // 오디오 URL 업데이트 로직 (웹소켓 이후)
     public void updateDiaryEntryWithAudioUrl(Long diaryEntryId, String audioUrl) {
@@ -115,97 +159,7 @@ public class DiaryService {
         dailyAnswerRepository.save(dailyAnswer);
     }
 
-    public DiaryEntryResponse createDiaryEntry(DiaryEntryRequest request) throws IOException {
-        // 그룹 조회
-        OnmomGroup group = groupRepository.findById(request.getGroupId())
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹 ID입니다."));
-
-        // 오디오 파일을 byte[]로 변환
-        byte[] audioData = request.getAudioFile().getBytes();
-
-        // S3에 오디오 파일 업로드
-        String audioUrl = s3Service.uploadAudioFile(audioData, request.getGroupId().toString());
-
-        // OnmomDiaryEntry 생성 (이미지 URL은 나중에 DALL·E로 생성)
-        OnmomDiaryEntry diaryEntry = OnmomDiaryEntry.builder()
-                .group(group)
-                .title(request.getTitle())
-                .textContent(request.getTextContent())
-                .imageURL("") // 이미지 URL은 나중에 DALL·E로 생성
-                .audioURL(audioUrl)
-                .build();
-
-        // 다이어리 엔트리 저장
-        diaryEntry = diaryEntryRepository.save(diaryEntry);
-
-        // 질문과 답변 저장
-        List<OnmomDailyAnswer> dailyAnswers = new ArrayList<>();
-        if (request.getQuestion1() != null && request.getAnswer1() != null) {
-            OnmomDailyAnswer dailyAnswer1 = OnmomDailyAnswer.builder()
-                    .diaryEntry(diaryEntry)
-                    .questionText(request.getQuestion1())
-                    .answerText(request.getAnswer1())
-                    .build();
-            dailyAnswers.add(dailyAnswer1);
-        }
-
-        if (request.getQuestion2() != null && request.getAnswer2() != null) {
-            OnmomDailyAnswer dailyAnswer2 = OnmomDailyAnswer.builder()
-                    .diaryEntry(diaryEntry)
-                    .questionText(request.getQuestion2())
-                    .answerText(request.getAnswer2())
-                    .build();
-            dailyAnswers.add(dailyAnswer2);
-        }
-
-        dailyAnswerRepository.saveAll(dailyAnswers);
-
-        // 응답 생성 (질문과 답변을 포함)
-        List<DailyAnswerResponse> dailyAnswerResponses = dailyAnswers.stream()
-                .map(answer -> DailyAnswerResponse.builder()
-                        .id(answer.getId())
-                        .questionText(answer.getQuestionText())
-                        .answerText(answer.getAnswerText())
-                        .createdAt(answer.getCreatedAt())
-                        .build())
-                .collect(Collectors.toList());
-
-        return DiaryEntryResponse.builder()
-                .diaryEntryId(diaryEntry.getDiaryEntryId())
-                .title(diaryEntry.getTitle())
-                .textContent(diaryEntry.getTextContent())
-                .imageUrl(diaryEntry.getImageURL())
-                .audioUrl(diaryEntry.getAudioURL())
-                .createdAt(diaryEntry.getCreatedAt())
-                .dailyAnswers(dailyAnswerResponses)  // 추가된 부분
-                .build();
-    }
-
-
-    public DiaryEntryResponse getDiaryEntry(Long diaryEntryId) {
-        OnmomDiaryEntry diaryEntry = diaryEntryRepository.findById(diaryEntryId)
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 다이어리 ID입니다."));
-
-        // 질문과 답변을 DailyAnswerResponse로 변환
-        List<DailyAnswerResponse> dailyAnswerResponses = diaryEntry.getDailyAnswers().stream()
-                .map(answer -> DailyAnswerResponse.builder()
-                        .id(answer.getId())
-                        .questionText(answer.getQuestionText())
-                        .answerText(answer.getAnswerText())
-                        .createdAt(answer.getCreatedAt())
-                        .build())
-                .collect(Collectors.toList());
-
-        // 응답 생성
-        return DiaryEntryResponse.builder()
-                .diaryEntryId(diaryEntry.getDiaryEntryId())
-                .textContent(diaryEntry.getTextContent())
-                .imageUrl(diaryEntry.getImageURL())
-                .audioUrl(diaryEntry.getAudioURL())
-                .dailyAnswers(dailyAnswerResponses)
-                .build();
-    }
-
+    // 특정 연월의 다이어리 엔트리 가져오기
     public List<DiaryEntryResponse> getMonthlyDiaryEntries(Long diaryId, int year, int month) {
         // YearMonth를 이용해 해당 연도와 월을 표현
         YearMonth yearMonth = YearMonth.of(year, month);
@@ -238,9 +192,11 @@ public class DiaryService {
                     return DiaryEntryResponse.builder()
                             .diaryEntryId(entry.getDiaryEntryId())
                             .title(entry.getTitle())
-                            .textContent(entry.getTextContent())
+                            .translatedContent(entry.getTranslatedText())
+                            .summaryContent(entry.getSummaryText())
                             .imageUrl(entry.getImageURL())
                             .audioUrl(entry.getAudioURL())
+                            .medicationStatus(entry.isMedicationStatus())
                             .createdAt(entry.getCreatedAt())
                             .dailyAnswers(dailyAnswerResponses)
                             .build();
@@ -248,6 +204,7 @@ public class DiaryService {
                 .collect(Collectors.toList());
     }
 
+    // 모든 다이어리 엔트리 가져오기
     public List<DiaryEntryResponse> getAllDiaryEntries() {
         // 모든 다이어리 엔트리를 조회
         List<OnmomDiaryEntry> diaryEntries = diaryEntryRepository.findAll();
@@ -269,14 +226,15 @@ public class DiaryService {
                     return DiaryEntryResponse.builder()
                             .diaryEntryId(entry.getDiaryEntryId())
                             .title(entry.getTitle())
-                            .textContent(entry.getTextContent())
+                            .translatedContent(entry.getTranslatedText())
+                            .summaryContent(entry.getSummaryText())
                             .imageUrl(entry.getImageURL())
                             .audioUrl(entry.getAudioURL())
+                            .medicationStatus(entry.isMedicationStatus())
                             .createdAt(entry.getCreatedAt())
                             .dailyAnswers(dailyAnswerResponses)
                             .build();
                 })
                 .collect(Collectors.toList());
     }
-
 }

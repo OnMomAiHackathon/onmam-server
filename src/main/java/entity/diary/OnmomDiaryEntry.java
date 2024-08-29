@@ -26,12 +26,15 @@ public class OnmomDiaryEntry {
 
     private String title;
     @Column(columnDefinition = "TEXT")
-    private String textContent; // 그림일기의 텍스트 내용
+    private String translatedText; // 오디오 텍스트 내용
+    private String summaryText;//AI 요약된 내용
     private String imageURL; // 그림일기의 이미지 URL
     private String audioURL; // 음성 파일의 URL
 
     @Column(updatable = false)
     private LocalDate createdAt; // 그림일기 생성 날짜
+
+    private boolean medicationStatus;
 
 
 
@@ -40,15 +43,17 @@ public class OnmomDiaryEntry {
     private List<OnmomDailyAnswer> dailyAnswers;
 
     @Builder
-    public OnmomDiaryEntry(Long diaryEntryId, String title, OnmomGroup group, String textContent, String imageURL, String audioURL, LocalDate createdAt) {
-        this.title = title;
+    public OnmomDiaryEntry(Long diaryEntryId, String title, OnmomGroup group, String translatedText, String summaryText, String imageURL, String audioURL, boolean medicationStatus) {
         this.diaryEntryId = diaryEntryId;
+        this.title = title;
         this.group = group;
-        this.textContent = textContent;
+        this.translatedText = translatedText;
+        this.summaryText = summaryText;
         this.imageURL = imageURL;
         this.audioURL = audioURL;
-        this.createdAt = createdAt;
+        this.medicationStatus = medicationStatus;
     }
+
 
     @PrePersist
     protected void onCreate() {
