@@ -25,6 +25,7 @@ public class OnmomUser {
     private String email; // 이메일
     private String password; // 비번
     private String name; // 이름
+    private String gender; // 성별
     private LocalDate birthdate; // 생일
     private String phone; // 휴대폰
 
@@ -52,11 +53,12 @@ public class OnmomUser {
 
 
     @Builder
-    public OnmomUser(String email, String password, String name, LocalDate birthdate, String phone, String kakaoId, String role, OnmomGroup group) {
+    public OnmomUser(String email, String password, String name, LocalDate birthdate, String gender, String phone, String kakaoId, String role, OnmomGroup group) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.birthdate = birthdate;
+        this.gender = gender;
         this.phone = phone;
         this.kakaoId = kakaoId;
         this.role = role;
