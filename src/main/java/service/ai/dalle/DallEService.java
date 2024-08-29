@@ -1,20 +1,20 @@
 package service.ai.dalle;
 
+import config.ai.AIConfig;
 import entity.user.OnmomUser;
 import exception.user.get.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
-import org.apache.catalina.User;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import config.ai.AIConfig;
 import repository.user.UserRepository;
 
-import java.io.*;
-
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +53,8 @@ public class DallEService {
         String finalPrompt = prompt + summary;
 
         // 사용자 정보 추가로 입력 시(성별, 나이 등)
-        // finalPrompt += "<사용자 정보> " + 사용자_정보
+        finalPrompt += "\n<사용자 정보> " + age + "세 " + gender;
+
 
         JSONObject jsonObject = new JSONObject();
         try {
