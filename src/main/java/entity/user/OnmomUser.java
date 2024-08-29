@@ -1,5 +1,6 @@
 package entity.user;
 
+import entity.diary.OnmomDiaryEntry;
 import entity.group.OnmomGroup;
 import entity.group.UserNickname;
 import entity.medication.OnmomMedication;
@@ -25,6 +26,7 @@ public class OnmomUser {
     private String email; // 이메일
     private String password; // 비번
     private String name; // 이름
+    private String gender; // 성별
     private LocalDate birthdate; // 생일
     private String phone; // 휴대폰
 
@@ -50,13 +52,18 @@ public class OnmomUser {
     @OneToMany(mappedBy = "targetUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<UserNickname> nicknamesSetOnUser;
 
+    // 한 유저는 여러 그림일기를 가질 수 있다
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<OnmomDiaryEntry> diaryEntries;
+
 
     @Builder
-    public OnmomUser(String email, String password, String name, LocalDate birthdate, String phone, String kakaoId, String role, OnmomGroup group) {
+    public OnmomUser(String email, String password, String name, LocalDate birthdate, String gender, String phone, String kakaoId, String role, OnmomGroup group) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.birthdate = birthdate;
+        this.gender = gender;
         this.phone = phone;
         this.kakaoId = kakaoId;
         this.role = role;

@@ -37,6 +37,29 @@ dependencies {
 	implementation 'software.amazon.awssdk:s3:2.20.0'// 08.24 정지안 : aws s3
 
 
+	// open ai
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	implementation 'com.stripe:stripe-java:22.10.0'
+	implementation 'javax.xml.bind:jaxb-api:2.3.0'
+	implementation 'sh.platform:config:2.2.2'
+
+	implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+	implementation group: 'org.json', name: 'json', version: '20200518'
+
+	// okhttp
+	implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+
+//	// OkHttp3 라이브러리 추가
+//	implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+//
+//	// org.json 라이브러리 추가
+//	implementation 'org.json:json:20210307'
+
+
 }
 
 tasks.named('test') {

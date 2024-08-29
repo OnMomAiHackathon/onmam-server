@@ -1,13 +1,16 @@
 package controller;
 
+import dto.ai.AIDiaryResponse;
 import dto.diary.DiaryEntryRequest;
 import dto.diary.DiaryEntryResponse;
 import dto.diary.question.AnswerRequest;
 import dto.diary.question.ResponseMessage;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.DiaryService;
+import service.ai.AIService;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,12 +20,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DiaryController {
     private final DiaryService diaryService;
+    private final AIService aiService;
 
 
     //다이어리 생성
     @PostMapping("/create")
+    @Transactional
     public ResponseEntity<DiaryEntryResponse> createDiaryEntry(@ModelAttribute DiaryEntryRequest request) throws IOException {
-        DiaryEntryResponse response = diaryService.createDiaryEntry(request);
+        //오디오 MultipartFile을 파일로 변환하여 ai단에 넘김
+        AIDiaryResponse aiDiaryResponse = aiService.processResponse(request.getAudioFile(), request.getUserId());
+
+        //그림일기 생성
+        DiaryEntryResponse response = diaryService.createDiaryEntry(request,aiDiaryResponse);
+
+        //응답에 셋팅
+        response.setImageUrl(aiDiaryResponse.getImageURL());
+        response.setSummaryContent(aiDiaryResponse.getSummary());
+        response.setMedicationStatus(aiDiaryResponse.isMedicationStatus());
+
         return ResponseEntity.ok(response);
     }
 

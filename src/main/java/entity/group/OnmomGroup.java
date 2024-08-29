@@ -32,6 +32,7 @@ public class OnmomGroup {
     @OneToMany(mappedBy = "group", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<OnmomDiaryEntry> diaryEntries;
 
+
     @Builder
     public OnmomGroup(Long groupId, LocalDate createdAt, String invitationCode, String groupName, Set<OnmomUser> users, Set<OnmomDiaryEntry> diaryEntries) {
         this.groupId = groupId;
