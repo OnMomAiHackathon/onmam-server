@@ -22,6 +22,12 @@ export AWS_SECRET_ACCESS_KEY=$(echo $SECRET | jq -r .AWS_SECRET_ACCESS_KEY)
 export AWS_REGION=$(echo $SECRET | jq -r .AWS_REGION)
 export S3_BUCKET=$(echo $SECRET | jq -r .S3_BUCKET)
 
+# gpt 환경변수
+export OPENAI_API_KEY=$(echo $SECRET | jq -r .OPENAI_API_KEY)
+export OPENAI_DALLE_ENDPOINT=$(echo $SECRET | jq -r .OPENAI_DALLE_ENDPOINT)
+export OPENAI_TRANSCRIPTIONS_ENDPOINT=$(echo $SECRET | jq -r .OPENAI_TRANSCRIPTIONS_ENDPOINT)
+export OPENAI_GPT_ENDPOINT=$(echo $SECRET | jq -r .OPENAI_GPT_ENDPOINT)
+
 # Spring Boot 애플리케이션 디렉터리
 SPRINGBOOT_DIR="/opt/onmom/springboot"
 
