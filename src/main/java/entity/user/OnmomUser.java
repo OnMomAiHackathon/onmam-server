@@ -1,5 +1,6 @@
 package entity.user;
 
+import entity.diary.OnmomDiaryEntry;
 import entity.group.OnmomGroup;
 import entity.group.UserNickname;
 import entity.medication.OnmomMedication;
@@ -50,6 +51,10 @@ public class OnmomUser {
     // 사용자가 타인에게 설정된 닉네임들
     @OneToMany(mappedBy = "targetUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<UserNickname> nicknamesSetOnUser;
+
+    // 한 유저는 여러 그림일기를 가질 수 있다
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<OnmomDiaryEntry> diaryEntries;
 
 
     @Builder

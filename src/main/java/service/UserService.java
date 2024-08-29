@@ -29,6 +29,7 @@ public class UserService {
 
         OnmomUser user = OnmomUser.builder()
                 .email(request.getEmail())
+                .gender(request.getGender())
                 .password(request.getPassword())
                 .name(request.getName())
                 .birthdate(request.getBirthdate())

@@ -21,7 +21,7 @@ public class AIService {
     @Autowired
     private DallEService dallEService;
 
-    public AIDiaryResponse processResponse(MultipartFile audioMultipartFile) throws IOException {
+    public AIDiaryResponse processResponse(MultipartFile audioMultipartFile, Long userId) throws IOException {
         // MultipartFile을 File로 변환
         File audioFile = File.createTempFile("audio", ".mp3");
         audioMultipartFile.transferTo(audioFile);
@@ -38,7 +38,7 @@ public class AIService {
         System.out.println(summary);
 //        boolean medicationStatus = chatGPTService.getMedicationStatus(summary);
         boolean medicationStatus = false;
-         String imageURL = dallEService.generateImageURL(summary);
+         String imageURL = dallEService.generateImageURL(summary,userId);
 
 
         AIDiaryResponse aiDiaryResponse = new AIDiaryResponse();

@@ -14,6 +14,7 @@ public class UserResponseDto {
     private LocalDate birthdate;
     private String phone;
     private String role;
+    private String gender;
 
     public UserResponseDto(OnmomUser user) {
         this.userId = user.getUserId();
@@ -23,5 +24,6 @@ public class UserResponseDto {
         this.birthdate = user.getBirthdate();
         this.phone = user.getPhone();
         this.role = user.getRole();
+        this.gender = user.getGender();
     }
 }

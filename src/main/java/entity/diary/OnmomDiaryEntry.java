@@ -1,6 +1,7 @@
 package entity.diary;
 
 import entity.group.OnmomGroup;
+import entity.user.OnmomUser;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,9 +25,15 @@ public class OnmomDiaryEntry {
     @JoinColumn(name = "groupId")
     private OnmomGroup group;
 
+    // 여러 그림일기는 하나의 유저로부터 만들어질 수 있다
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private OnmomUser user;
+
     private String title;
     @Column(columnDefinition = "TEXT")
-    private String translatedText; // 오디오 텍스트 내용
+    private String transcribedContent; // 오디오 텍스트 내용
+    @Column(columnDefinition = "TEXT")
     private String summaryText;//AI 요약된 내용
     private String imageURL; // 그림일기의 이미지 URL
     private String audioURL; // 음성 파일의 URL
@@ -43,11 +50,11 @@ public class OnmomDiaryEntry {
     private List<OnmomDailyAnswer> dailyAnswers;
 
     @Builder
-    public OnmomDiaryEntry(Long diaryEntryId, String title, OnmomGroup group, String translatedText, String summaryText, String imageURL, String audioURL, boolean medicationStatus) {
+    public OnmomDiaryEntry(Long diaryEntryId, String title, OnmomGroup group, String transcribedContent, String summaryText, String imageURL, String audioURL, boolean medicationStatus) {
         this.diaryEntryId = diaryEntryId;
         this.title = title;
         this.group = group;
-        this.translatedText = translatedText;
+        this.transcribedContent = transcribedContent;
         this.summaryText = summaryText;
         this.imageURL = imageURL;
         this.audioURL = audioURL;

@@ -10,6 +10,7 @@ import java.time.LocalDate;
 public class UserJoinRequest {
     private String kakaoId;  // Kakao ID는 선택적
     private String email;
+    private String gender;
     private String password;
     private String name;
     private LocalDate birthdate;

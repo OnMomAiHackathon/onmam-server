@@ -8,5 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 public class DiaryEntryRequest {
     private Long groupId;
+    private Long userId;
     private MultipartFile audioFile;
 }

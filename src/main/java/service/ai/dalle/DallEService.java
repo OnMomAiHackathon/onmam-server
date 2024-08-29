@@ -1,19 +1,28 @@
 package service.ai.dalle;
 
+import entity.user.OnmomUser;
+import exception.user.get.UserNotFoundException;
+import lombok.RequiredArgsConstructor;
 import okhttp3.*;
+import org.apache.catalina.User;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import config.ai.AIConfig;
+import repository.user.UserRepository;
 
 import java.io.*;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@RequiredArgsConstructor
 public class DallEService {
+    private final UserRepository userRepository;
 
     @Value("${openai.api.api-key}")
     private String OPENAI_API_KEY;
@@ -29,7 +38,18 @@ public class DallEService {
 
 
     // 이미지를 생성하는 메서드
-    public String generateImageURL(String summary) {
+    public String generateImageURL(String summary, Long userId) {
+        OnmomUser user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("유저 아이디를 찾을 수 없습니다. 생성된 유저아이디인지 확인하세요."));
+        String gender = user.getGender(); // 성별
+        int age; //나이
+        if(user.getBirthdate()!=null){
+            age = Period.between(LocalDate.now(), user.getBirthdate()).getYears();
+        }else{
+            throw new IllegalArgumentException("유저에 생년월일이 입력되어있지 않습니다.");
+        }
+        System.out.println("gender:"+gender);
+        System.out.println("age:"+age);
+
         String finalPrompt = prompt + summary;
 
         // 사용자 정보 추가로 입력 시(성별, 나이 등)

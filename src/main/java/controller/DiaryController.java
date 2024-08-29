@@ -28,7 +28,7 @@ public class DiaryController {
     @Transactional
     public ResponseEntity<DiaryEntryResponse> createDiaryEntry(@ModelAttribute DiaryEntryRequest request) throws IOException {
         //오디오 MultipartFile을 파일로 변환하여 ai단에 넘김
-        AIDiaryResponse aiDiaryResponse = aiService.processResponse(request.getAudioFile());
+        AIDiaryResponse aiDiaryResponse = aiService.processResponse(request.getAudioFile(), request.getUserId());
 
         //그림일기 생성
         DiaryEntryResponse response = diaryService.createDiaryEntry(request,aiDiaryResponse);
