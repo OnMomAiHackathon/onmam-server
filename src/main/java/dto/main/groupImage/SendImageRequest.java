@@ -1,4 +1,4 @@
-package dto.main;
+package dto.main.groupImage;
 
 import lombok.Getter;
 import lombok.Setter;
