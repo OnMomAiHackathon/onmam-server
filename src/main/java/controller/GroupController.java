@@ -39,11 +39,12 @@ public class GroupController {
     @PostMapping("/{groupId}/members")
     public ResponseEntity<GroupMemberUpdateResponse> updateGroupMembers(
             @PathVariable Long groupId,
-            @ModelAttribute GroupMemberUpdateRequest updateRequest) throws IOException {
+            @RequestBody GroupMemberUpdateRequest updateRequest) throws IOException {
 
         GroupMemberUpdateResponse response = onmomGroupService.updateGroupMembers(groupId, updateRequest);
         return ResponseEntity.ok(response);
     }
+
 
     // 초대코드 보내기
     @PostMapping("/{groupId}/invite")

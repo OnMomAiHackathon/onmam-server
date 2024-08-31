@@ -12,7 +12,6 @@ import entity.user.OnmomUser;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import repository.group.GroupRepository;
 import repository.group.UserNicknameRepository;
 import repository.user.UserRepository;
@@ -80,26 +79,18 @@ public class OnmomGroupService {
             OnmomUser user = userRepository.findById(memberRequest.getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 user ID"));
 
-            // S3에 프로필 이미지 업로드
-            String profileImageUrl = null;
-            MultipartFile profileImageFile = memberRequest.getProfileImageFile();
-            if (profileImageFile != null && !profileImageFile.isEmpty()) {
-                profileImageUrl = s3Service.uploadProfileImage(profileImageFile, groupId, user.getUserId(), user.getUserId());
-            }
+            OnmomUser targetUser = userRepository.findById(memberRequest.getTargetUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 target user ID"));
 
             // 닉네임 및 프로필 이미지 업데이트 로직
-            UserNickname userNickname = userNicknameRepository.findByUserAndGroup(user, group)
+            UserNickname userNickname = userNicknameRepository.findByUserAndGroupAndTargetUser(user, group, targetUser)
                     .orElse(UserNickname.builder()
                             .user(user)
                             .group(group)
-                            .targetUser(user)  // 본인을 대상으로 하는 경우
+                            .targetUser(targetUser)
                             .nickname(memberRequest.getNickname())
-                            .profileImageUrl(profileImageUrl)
                             .build());
 
-            if (profileImageUrl != null) {
-                userNickname.updateProfileImageUrl(profileImageUrl);
-            }
             userNickname.updateNickname(memberRequest.getNickname());
             userNicknameRepository.save(userNickname);
         }
@@ -155,6 +146,7 @@ public class OnmomGroupService {
 
         // 3. 그룹에 사용자 추가
         user.setGroup(group);
+        user.setRole(request.getRole());
         userRepository.save(user);
 
         // 4. 응답 생성
