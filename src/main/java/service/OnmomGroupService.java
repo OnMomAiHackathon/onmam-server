@@ -4,6 +4,7 @@ import dto.group.GroupCreateRequest;
 import dto.group.GroupCreateResponse;
 import dto.group.GroupMemberUpdateRequest;
 import dto.group.GroupMemberUpdateResponse;
+import dto.group.expel.GroupExpelMemberRequest;
 import dto.group.invite.InviteAcceptRequest;
 import dto.group.invite.InviteAcceptResponse;
 import entity.group.OnmomGroup;
@@ -37,6 +38,7 @@ public class OnmomGroupService {
         OnmomGroup group = OnmomGroup.builder()
                 .groupName(groupRequest.getGroupName())
                 .createdAt(LocalDate.now())
+                .groupOwnerUserId(groupRequest.getUserId())
                 .build();
 
         group = groupRepository.save(group);//그룹 저장 (그룹id생성을위함)
@@ -173,5 +175,25 @@ public class OnmomGroupService {
 
     public OnmomGroup findGroupById(Long groupId) {
         return groupRepository.findById(groupId).orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹아이디입니다."));
+    }
+
+    @Transactional
+    public void expelMember(Long groupId, GroupExpelMemberRequest request) {
+        OnmomGroup group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹 ID입니다."));
+
+        OnmomUser targetUser = userRepository.findById(request.getTargetUserId())
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 유저 ID입니다."));
+
+        // 그룹장이 맞는지 확인
+        if (group.getGroupOwnerUserId() != request.getUserId()) {
+            throw new IllegalArgumentException("해당 유저는 그룹장이 아닙니다.");
+        }
+
+        // 그룹에서 타겟 유저를 제거
+        group.getUsers().remove(targetUser); // 그룹의 users 컬렉션에서 제거
+        targetUser.setGroup(null); // 유저의 group 필드를 null로 설정
+        userRepository.save(targetUser);
+        groupRepository.save(group); // 그룹 엔티티 업데이트
     }
 }
