@@ -1,10 +1,12 @@
 package service;
 
-import dto.main.SendImageRequest;
+import dto.main.groupImage.GroupImageResponse;
+import dto.main.groupImage.SendImageRequest;
 import entity.group.GroupImage;
 import entity.group.OnmomGroup;
 import entity.user.OnmomUser;
 import lombok.RequiredArgsConstructor;
+import mapper.main.GroupImageMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,8 +17,9 @@ import repository.user.UserRepository;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -67,4 +70,16 @@ public class MainService {
 
         return ResponseEntity.ok(response);
     }
+
+    //모든 그룹 이미지 조회
+    public List<GroupImageResponse> getAllImagesByGroupId(Long groupId) {
+        OnmomGroup group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹 ID입니다."));
+        List<GroupImage> groupImages = groupImageRepository.findByGroup(group);
+
+        return groupImages.stream()
+                .map(GroupImageMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
 }

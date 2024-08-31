@@ -1,5 +1,6 @@
 package entity.group;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import entity.user.OnmomUser;
 import jakarta.persistence.*;
 import lombok.Builder;
