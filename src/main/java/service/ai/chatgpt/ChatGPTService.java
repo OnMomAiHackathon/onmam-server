@@ -1,6 +1,7 @@
 package service.ai.chatgpt;
 
 import config.ai.AIConfig;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
 import org.json.JSONArray;
@@ -32,6 +33,7 @@ public class ChatGPTService {
             .readTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(60, TimeUnit.SECONDS)
             .build();
+
 
     public String transcribe(File audioFile) throws IOException {
         if (OPENAI_API_KEY == null || OPENAI_API_KEY.isEmpty()) {
