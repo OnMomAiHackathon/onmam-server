@@ -99,7 +99,7 @@ public class OnmomGroupService {
 
 
     // 초대 코드 생성 및 전송
-    public String sendInvite(Long groupId, String email) {
+    public String sendInvite(Long groupId) {
         OnmomGroup group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹아이디입니다."));
 

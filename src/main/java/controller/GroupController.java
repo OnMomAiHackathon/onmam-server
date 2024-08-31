@@ -40,8 +40,8 @@ public class GroupController {
 
     // 초대코드 보내기
     @PostMapping("/{groupId}/invite")
-    public ResponseEntity<Map<String,String>> sendGroupInvite(@PathVariable Long groupId, @RequestBody String email) {
-        String inviteCode = onmomGroupService.sendInvite(groupId, email);
+    public ResponseEntity<Map<String,String>> sendGroupInvite(@PathVariable Long groupId) {
+        String inviteCode = onmomGroupService.sendInvite(groupId);
         // 응답 데이터 구성
         Map<String, String> response = new HashMap<>();
         response.put("message", inviteCode);
