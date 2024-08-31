@@ -1,6 +1,7 @@
 package controller;
 
 import dto.ai.AIDiaryResponse;
+import dto.diary.DiaryAuthRequest;
 import dto.diary.DiaryEntryRequest;
 import dto.diary.DiaryEntryResponse;
 import dto.diary.question.AnswerRequest;
@@ -49,13 +50,9 @@ public class DiaryController {
     }
 
     //다이어리 월별 조회
-    @GetMapping("/{diaryId}/entries/{year}/{month}")
-    public ResponseEntity<List<DiaryEntryResponse>> getMonthlyDiaryEntries(
-            @PathVariable Long diaryId,
-            @PathVariable int year,
-            @PathVariable int month) {
-
-        List<DiaryEntryResponse> response = diaryService.getMonthlyDiaryEntries(diaryId, year, month);
+    @PostMapping("/monthly")
+    public ResponseEntity<List<DiaryEntryResponse>> getMonthlyDiaryEntries(@RequestBody DiaryAuthRequest diaryAuthRequest) {
+        List<DiaryEntryResponse> response = diaryService.getMonthlyDiaryEntries(diaryAuthRequest);
         return ResponseEntity.ok(response);
     }
 
