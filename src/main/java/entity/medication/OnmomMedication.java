@@ -25,7 +25,6 @@ public class OnmomMedication {
     private OnmomUser user;
 
     private String medicineName; // 약 이름
-    private String dosage; // 복용량
     private LocalDate startDate; // 뵥약 시작 날짜
     private LocalDate endDate; // 복약 종료 날짜
     private String frequency; // 하루 몇회?
@@ -35,11 +34,10 @@ public class OnmomMedication {
     private Set<OnmomMedicationLog> medicationLogs;
 
     @Builder
-    public OnmomMedication(Long medicationId, OnmomUser user, String medicineName, String dosage, LocalDate startDate, LocalDate endDate, String frequency, Set<OnmomMedicationLog> medicationLogs) {
+    public OnmomMedication(Long medicationId, OnmomUser user, String medicineName, LocalDate startDate, LocalDate endDate, String frequency, Set<OnmomMedicationLog> medicationLogs) {
         this.medicationId = medicationId;
         this.user = user;
         this.medicineName = medicineName;
-        this.dosage = dosage;
         this.startDate = startDate;
         this.endDate = endDate;
         this.frequency = frequency;
