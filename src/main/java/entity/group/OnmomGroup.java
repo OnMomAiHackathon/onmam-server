@@ -19,6 +19,7 @@ public class OnmomGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long groupId;
     private String groupName;
+    private Long groupOwnerUserId;
     private String invitationCode;
     private String groupImageUrl;
     private LocalDate createdAt;
@@ -30,7 +31,7 @@ public class OnmomGroup {
     private Set<OnmomDiaryEntry> diaryEntries;
 
     @Builder
-    public OnmomGroup(Long groupId, LocalDate createdAt, String invitationCode, String groupName, String groupImageUrl, Set<OnmomUser> users, Set<OnmomDiaryEntry> diaryEntries) {
+    public OnmomGroup(Long groupId, LocalDate createdAt, String invitationCode, String groupName, String groupImageUrl, Set<OnmomUser> users, Set<OnmomDiaryEntry> diaryEntries, Long groupOwnerUserId) {
         this.groupId = groupId;
         this.createdAt = createdAt;
         this.invitationCode = invitationCode;
@@ -38,6 +39,7 @@ public class OnmomGroup {
         this.groupImageUrl = groupImageUrl;
         this.users = users;
         this.diaryEntries = diaryEntries;
+        this.groupOwnerUserId=groupOwnerUserId;
     }
 
     public void setGroupName(String groupName){

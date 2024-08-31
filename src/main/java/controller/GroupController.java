@@ -1,10 +1,12 @@
 package controller;
 
 import dto.group.*;
+import dto.group.expel.GroupExpelMemberRequest;
 import dto.group.invite.InviteAcceptRequest;
 import dto.group.invite.InviteAcceptResponse;
 import entity.group.OnmomGroup;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.OnmomGroupService;
@@ -39,11 +41,12 @@ public class GroupController {
     @PostMapping("/{groupId}/members")
     public ResponseEntity<GroupMemberUpdateResponse> updateGroupMembers(
             @PathVariable Long groupId,
-            @ModelAttribute GroupMemberUpdateRequest updateRequest) throws IOException {
+            @RequestBody GroupMemberUpdateRequest updateRequest) throws IOException {
 
         GroupMemberUpdateResponse response = onmomGroupService.updateGroupMembers(groupId, updateRequest);
         return ResponseEntity.ok(response);
     }
+
 
     // 초대코드 보내기
     @PostMapping("/{groupId}/invite")
@@ -90,10 +93,32 @@ public class GroupController {
         GroupFindByIdResponse response = GroupFindByIdResponse.builder()
                 .groupId(group.getGroupId())
                 .groupName(group.getGroupName())
+                .groupOwnerUserId(group.getGroupOwnerUserId())
+                .createdAt(group.getCreatedAt())
+                .groupImageUrl(group.getGroupImageUrl())
                 .members(members)
                 .build();
         return ResponseEntity.ok(response);
 
     }
+
+    //그룹장이 그룹원을 그룹에서 추방하는 api
+    // 그룹장이 그룹원을 그룹에서 추방하는 API
+    @PostMapping("/{groupId}/expel")
+    public ResponseEntity<Map<String, String>> expelMember(
+            @PathVariable Long groupId,
+            @RequestBody GroupExpelMemberRequest groupExpelMemberRequest
+    ) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            onmomGroupService.expelMember(groupId, groupExpelMemberRequest);
+            response.put("message", "그룹원이 성공적으로 추방되었습니다.");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("message", "추방 실패: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
 
 }

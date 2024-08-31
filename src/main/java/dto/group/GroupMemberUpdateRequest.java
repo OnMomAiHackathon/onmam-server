@@ -2,7 +2,6 @@ package dto.group;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public class GroupMemberUpdateRequest {
     @Setter
     public static class Member {
         private Long userId;
+        private Long targetUserId;// 닉네임을 설정하는 대상 유저의 ID (타겟 유저)
         private String nickname;
-        private MultipartFile profileImageFile;
     }
 }

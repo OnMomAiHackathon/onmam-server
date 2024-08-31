@@ -4,6 +4,7 @@ import dto.group.GroupCreateRequest;
 import dto.group.GroupCreateResponse;
 import dto.group.GroupMemberUpdateRequest;
 import dto.group.GroupMemberUpdateResponse;
+import dto.group.expel.GroupExpelMemberRequest;
 import dto.group.invite.InviteAcceptRequest;
 import dto.group.invite.InviteAcceptResponse;
 import entity.group.OnmomGroup;
@@ -12,7 +13,6 @@ import entity.user.OnmomUser;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import repository.group.GroupRepository;
 import repository.group.UserNicknameRepository;
 import repository.user.UserRepository;
@@ -38,6 +38,7 @@ public class OnmomGroupService {
         OnmomGroup group = OnmomGroup.builder()
                 .groupName(groupRequest.getGroupName())
                 .createdAt(LocalDate.now())
+                .groupOwnerUserId(groupRequest.getUserId())
                 .build();
 
         group = groupRepository.save(group);//그룹 저장 (그룹id생성을위함)
@@ -80,26 +81,18 @@ public class OnmomGroupService {
             OnmomUser user = userRepository.findById(memberRequest.getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 user ID"));
 
-            // S3에 프로필 이미지 업로드
-            String profileImageUrl = null;
-            MultipartFile profileImageFile = memberRequest.getProfileImageFile();
-            if (profileImageFile != null && !profileImageFile.isEmpty()) {
-                profileImageUrl = s3Service.uploadProfileImage(profileImageFile, groupId, user.getUserId(), user.getUserId());
-            }
+            OnmomUser targetUser = userRepository.findById(memberRequest.getTargetUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 target user ID"));
 
             // 닉네임 및 프로필 이미지 업데이트 로직
-            UserNickname userNickname = userNicknameRepository.findByUserAndGroup(user, group)
+            UserNickname userNickname = userNicknameRepository.findByUserAndGroupAndTargetUser(user, group, targetUser)
                     .orElse(UserNickname.builder()
                             .user(user)
                             .group(group)
-                            .targetUser(user)  // 본인을 대상으로 하는 경우
+                            .targetUser(targetUser)
                             .nickname(memberRequest.getNickname())
-                            .profileImageUrl(profileImageUrl)
                             .build());
 
-            if (profileImageUrl != null) {
-                userNickname.updateProfileImageUrl(profileImageUrl);
-            }
             userNickname.updateNickname(memberRequest.getNickname());
             userNicknameRepository.save(userNickname);
         }
@@ -155,6 +148,7 @@ public class OnmomGroupService {
 
         // 3. 그룹에 사용자 추가
         user.setGroup(group);
+        user.setRole(request.getRole());
         userRepository.save(user);
 
         // 4. 응답 생성
@@ -181,5 +175,25 @@ public class OnmomGroupService {
 
     public OnmomGroup findGroupById(Long groupId) {
         return groupRepository.findById(groupId).orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹아이디입니다."));
+    }
+
+    @Transactional
+    public void expelMember(Long groupId, GroupExpelMemberRequest request) {
+        OnmomGroup group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹 ID입니다."));
+
+        OnmomUser targetUser = userRepository.findById(request.getTargetUserId())
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 유저 ID입니다."));
+
+        // 그룹장이 맞는지 확인
+        if (group.getGroupOwnerUserId() != request.getUserId()) {
+            throw new IllegalArgumentException("해당 유저는 그룹장이 아닙니다.");
+        }
+
+        // 그룹에서 타겟 유저를 제거
+        group.getUsers().remove(targetUser); // 그룹의 users 컬렉션에서 제거
+        targetUser.setGroup(null); // 유저의 group 필드를 null로 설정
+        userRepository.save(targetUser);
+        groupRepository.save(group); // 그룹 엔티티 업데이트
     }
 }

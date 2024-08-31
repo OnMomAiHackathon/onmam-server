@@ -8,4 +8,5 @@ import lombok.Setter;
 public class InviteAcceptRequest {
     private Long userId;
     private String inviteCode;
+    private String role;
 }

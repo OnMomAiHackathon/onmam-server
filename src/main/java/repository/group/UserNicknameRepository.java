@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface UserNicknameRepository extends JpaRepository<UserNickname, Long> {
 
-    Optional<UserNickname> findByUserAndGroup(OnmomUser user, OnmomGroup group);
+    Optional<UserNickname> findByUserAndGroupAndTargetUser(OnmomUser user, OnmomGroup group, OnmomUser targetUser);
 
 }
