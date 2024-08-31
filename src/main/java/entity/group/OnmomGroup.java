@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.Set;
 
-// (독거노인, 자식으로 구성된) 그룹
 @Entity
 @Table(name = "onmomGroup")
 @Getter
@@ -19,26 +18,24 @@ public class OnmomGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long groupId;
-    private String groupName; //그룹이름
-    private String invitationCode; //초대코드
-
+    private String groupName;
+    private String invitationCode;
+    private String groupImageUrl;
     private LocalDate createdAt;
 
-    // 한 그룹은 N명의 유저로 구성될 수 있다
     @OneToMany(mappedBy = "group")
     private Set<OnmomUser> users;
 
-    // 한 그룹은 여러 다이어리를 가질 수 있다.
     @OneToMany(mappedBy = "group", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<OnmomDiaryEntry> diaryEntries;
 
-
     @Builder
-    public OnmomGroup(Long groupId, LocalDate createdAt, String invitationCode, String groupName, Set<OnmomUser> users, Set<OnmomDiaryEntry> diaryEntries) {
+    public OnmomGroup(Long groupId, LocalDate createdAt, String invitationCode, String groupName, String groupImageUrl, Set<OnmomUser> users, Set<OnmomDiaryEntry> diaryEntries) {
         this.groupId = groupId;
         this.createdAt = createdAt;
         this.invitationCode = invitationCode;
         this.groupName = groupName;
+        this.groupImageUrl = groupImageUrl;
         this.users = users;
         this.diaryEntries = diaryEntries;
     }
@@ -49,5 +46,9 @@ public class OnmomGroup {
 
     public void setInvitationCode(String invitationCode){
         this.invitationCode = invitationCode;
+    }
+
+    public void setGroupImageUrl(String groupImageUrl){
+        this.groupImageUrl = groupImageUrl;
     }
 }

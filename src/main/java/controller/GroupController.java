@@ -22,10 +22,17 @@ public class GroupController {
 
     // 그룹 생성
     @PostMapping
-    public ResponseEntity<GroupCreateResponse> createGroup(@RequestBody GroupCreateRequest groupCreateRequest) {
-        GroupCreateResponse response = onmomGroupService.createGroup(groupCreateRequest);
+    public ResponseEntity<GroupCreateResponse> createGroup(@ModelAttribute GroupCreateRequest groupCreateRequest) {
+        GroupCreateResponse response;
+        try {
+            response = onmomGroupService.createGroup(groupCreateRequest);
+        } catch (IOException e) {
+            throw new RuntimeException("그룹이미지 업로드 중 장애 발생", e);
+        }
         return ResponseEntity.ok(response);
     }
+
+
 
 
     // 그룹 멤버 수정
@@ -40,8 +47,8 @@ public class GroupController {
 
     // 초대코드 보내기
     @PostMapping("/{groupId}/invite")
-    public ResponseEntity<Map<String,String>> sendGroupInvite(@PathVariable Long groupId, @RequestBody String email) {
-        String inviteCode = onmomGroupService.sendInvite(groupId, email);
+    public ResponseEntity<Map<String,String>> sendGroupInvite(@PathVariable Long groupId) {
+        String inviteCode = onmomGroupService.sendInvite(groupId);
         // 응답 데이터 구성
         Map<String, String> response = new HashMap<>();
         response.put("message", inviteCode);

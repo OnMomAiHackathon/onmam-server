@@ -1,13 +1,14 @@
 package dto.group;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Setter
 public class GroupCreateRequest {
     private String groupName;
     private Long userId;
+    private MultipartFile groupImage;
+    private String role;
 }

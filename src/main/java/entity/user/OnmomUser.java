@@ -74,4 +74,7 @@ public class OnmomUser {
     public void setGroup(OnmomGroup group) {
         this.group = group;
     }
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

@@ -91,4 +91,12 @@ public class S3Service {
 
         return getFileUrl(fileName);
     }
+
+    public String uploadGroupImage(MultipartFile groupImage, Long groupId) throws IOException {
+        if (groupId == null) {
+            throw new IllegalArgumentException("S3그룹이미지 저장시 그룹아이디는 null 이 들어올 수 없음.");
+        }
+        String folderName = "group/" + groupId;
+        return uploadFile(groupImage, folderName);
+    }
 }
