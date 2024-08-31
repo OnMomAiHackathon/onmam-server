@@ -32,19 +32,31 @@ public class OnmomGroupService {
 
 
     // 그룹 생성!
-    public GroupCreateResponse createGroup(GroupCreateRequest groupRequest) {
+    @Transactional
+    public GroupCreateResponse createGroup(GroupCreateRequest groupRequest) throws IOException {
         // 1. 그룹 생성
         OnmomGroup group = OnmomGroup.builder()
                 .groupName(groupRequest.getGroupName())
                 .createdAt(LocalDate.now())
                 .build();
-        groupRepository.save(group);
 
-        // 2. 사용자 업데이트 (그룹에 연결)
+        group = groupRepository.save(group);//그룹 저장 (그룹id생성을위함)
+
+
+        // 그룹 이미지를 S3에 업로드하고, 이미지 URL을 그룹 엔티티에 설정
+        if (groupRequest.getGroupImage() != null) {
+            String imageUrl = s3Service.uploadGroupImage(groupRequest.getGroupImage(), group.getGroupId());
+            group.setGroupImageUrl(imageUrl);
+            groupRepository.save(group);//이미지설정된 그룹을 한 번 더 저장
+        }
+
+
+        // 2. 사용자 업데이트
         OnmomUser user = userRepository.findById(groupRequest.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
-        user.setGroup(group);  // 사용자에게 그룹 정보 설정
-        userRepository.save(user);  // 사용자 정보 업데이트
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 유저아이디입니다."));
+        user.setGroup(group);//유저 그룹 세팅
+        user.setRole(groupRequest.getRole());//유저 역할 부여
+        userRepository.save(user);
 
         // 3. 응답 생성
         return GroupCreateResponse.builder()
@@ -57,7 +69,7 @@ public class OnmomGroupService {
     // 그룹 멤버 수정 로직
     public GroupMemberUpdateResponse updateGroupMembers(Long groupId, GroupMemberUpdateRequest updateRequest) throws IOException {
         OnmomGroup group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid group ID"));
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 group ID"));
 
         // 그룹 이름 업데이트
         group.setGroupName(updateRequest.getGroupName());
@@ -66,7 +78,7 @@ public class OnmomGroupService {
         // 멤버들에 대한 닉네임과 프로필 이미지 업데이트
         for (GroupMemberUpdateRequest.Member memberRequest : updateRequest.getMembers()) {
             OnmomUser user = userRepository.findById(memberRequest.getUserId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 user ID"));
 
             // S3에 프로필 이미지 업로드
             String profileImageUrl = null;
@@ -168,6 +180,6 @@ public class OnmomGroupService {
     }
 
     public OnmomGroup findGroupById(Long groupId) {
-        return groupRepository.findById(groupId).orElseThrow(()-> new IllegalArgumentException("유효하지 않은 그룹아이디입니다."));
+        return groupRepository.findById(groupId).orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹아이디입니다."));
     }
 }
