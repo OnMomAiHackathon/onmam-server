@@ -24,7 +24,7 @@ public class MedicationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MedicationResponse>> getUserMedications(@RequestParam Long userId, @RequestParam Long groupId) {
+    public ResponseEntity<List<MedicationResponse>> getAllMedications(@RequestParam Long userId, @RequestParam Long groupId) {
         List<MedicationResponse> response = medicationService.getAllMedications(userId, groupId);
         return ResponseEntity.ok(response);
     }

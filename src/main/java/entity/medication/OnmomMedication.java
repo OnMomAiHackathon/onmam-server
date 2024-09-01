@@ -37,7 +37,7 @@ public class OnmomMedication {
     private int totalDosage; // 총복용량
     private int remainingDosage; // 남은 약 개수
 
-    @OneToMany(mappedBy = "medication")
+    @OneToMany(mappedBy = "medication", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OnmomMedicationLog> medicationLogs;
 
     @Builder
