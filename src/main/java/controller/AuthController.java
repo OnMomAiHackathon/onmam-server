@@ -8,6 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.UserService;
 
+<<<<<<< Updated upstream
+=======
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+>>>>>>> Stashed changes
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("auth")
@@ -25,8 +32,10 @@ public class AuthController {
 
     //로그아웃
     @GetMapping("/logout")
-    public ResponseEntity<Void> logout(HttpSession session) {
+    public ResponseEntity<Map<String,String>> logout(HttpSession session) {
         session.invalidate();  // 세션 무효화
-        return ResponseEntity.ok().build();
+        Map<String,String> response = new HashMap<>();
+        response.put("message", "로그아웃되었습니다.");
+        return ResponseEntity.ok(response);
     }
 }
