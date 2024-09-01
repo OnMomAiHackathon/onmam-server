@@ -1,5 +1,6 @@
 package entity.medication;
 
+import entity.group.OnmomGroup;
 import entity.user.OnmomUser;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 // 복약 정보를 저장하는 Entity
@@ -19,22 +21,27 @@ public class OnmomMedication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long medicationId;
 
-    //여러 복약 정보가 하나의 user와 관계를 가진다.
     @ManyToOne
     @JoinColumn(name = "userId")
     private OnmomUser user;
 
-    private String medicineName; // 약 이름
-    private LocalDate startDate; // 뵥약 시작 날짜
-    private LocalDate endDate; // 복약 종료 날짜
-    private String frequency; // 하루 몇회?
+    @ManyToOne
+    @JoinColumn(name = "groupId")
+    private OnmomGroup group;
 
-    // 하나의 복약정보는 여러 복약 로그데이터를 가질 수 있다.
+    private String medicineName;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private int frequency; // 하루 몇회?
+
+    private int totalDosage; // 총복용량
+    private int remainingDosage; // 남은 약 개수
+
     @OneToMany(mappedBy = "medication")
     private Set<OnmomMedicationLog> medicationLogs;
 
     @Builder
-    public OnmomMedication(Long medicationId, OnmomUser user, String medicineName, LocalDate startDate, LocalDate endDate, String frequency, Set<OnmomMedicationLog> medicationLogs) {
+    public OnmomMedication(Long medicationId, OnmomUser user, String medicineName, LocalDate startDate, LocalDate endDate, int frequency, Set<OnmomMedicationLog> medicationLogs, OnmomGroup group, int totalDosage, int remainingDosage) {
         this.medicationId = medicationId;
         this.user = user;
         this.medicineName = medicineName;
@@ -42,5 +49,8 @@ public class OnmomMedication {
         this.endDate = endDate;
         this.frequency = frequency;
         this.medicationLogs = medicationLogs;
+        this.group = group;
+        this.totalDosage = totalDosage;
+        this.remainingDosage = remainingDosage;
     }
 }
