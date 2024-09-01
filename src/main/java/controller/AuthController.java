@@ -8,13 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.UserService;
 
-<<<<<<< Updated upstream
-=======
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
->>>>>>> Stashed changes
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("auth")
