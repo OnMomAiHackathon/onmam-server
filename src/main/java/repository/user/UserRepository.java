@@ -13,4 +13,6 @@ public interface UserRepository extends JpaRepository<OnmomUser,Long> {
     Optional<OnmomUser> findByEmail(String email);
 
     List<OnmomUser> findByGroup(OnmomGroup group);
+
+    Optional<OnmomUser> findByKakaoId(String kakaoId);
 }
