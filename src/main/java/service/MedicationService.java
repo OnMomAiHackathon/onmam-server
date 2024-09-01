@@ -1,5 +1,6 @@
 package service;
 
+import dto.medication.MedicationResponse;
 import dto.medication.RegisterMedicationRequest;
 import dto.medication.RegisterMedicationResponse;
 import entity.group.OnmomGroup;
@@ -13,6 +14,8 @@ import repository.medication.MedicationRepository;
 import repository.user.UserRepository;
 
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,5 +65,33 @@ public class MedicationService {
                 .message("복약 정보가 성공적으로 등록되었습니다.")
                 .build();
     }
+
+    public List<MedicationResponse> getAllMedications(Long userId, Long groupId) {
+        OnmomUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 유저 아이디입니다."));
+
+        OnmomGroup group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹 아이디입니다."));
+
+        boolean isUserInGroup = group.getUsers().contains(user);
+        if (!isUserInGroup) {
+            throw new IllegalArgumentException("유저가 해당 그룹에 속해있지 않습니다.");
+        }
+
+        List<OnmomMedication> medications = medicationRepository.findByGroup(group);
+
+        return medications.stream()
+                .map(medication -> MedicationResponse.builder()
+                        .medicationId(medication.getMedicationId())
+                        .medicineName(medication.getMedicineName())
+                        .startDate(medication.getStartDate())
+                        .endDate(medication.getEndDate())
+                        .frequency(medication.getFrequency())
+                        .totalDosage(medication.getTotalDosage())
+                        .remainingDosage(medication.getRemainingDosage())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 
 }
