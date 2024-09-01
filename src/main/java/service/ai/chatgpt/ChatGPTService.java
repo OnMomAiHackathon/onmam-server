@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class ChatGPTService {
     private final AIConfig aiConfig;
+    public String summary;
 
     @Value("${openai.api.api-key}")
     private String OPENAI_API_KEY;
@@ -115,7 +116,8 @@ public class ChatGPTService {
         if (choices != null && choices.length() > 0) {
             JSONObject messageObject = choices.getJSONObject(0).optJSONObject("message");
             if (messageObject != null) {
-                return messageObject.optString("content", "No content");
+                summary =messageObject.optString("content", "No content");
+                return summary;
             }
         }
 
@@ -126,7 +128,7 @@ public class ChatGPTService {
 
 
 
-    public boolean getMedicationStatus(String summary) {
+    public boolean getMedicationStatus() {
         return summary.contains("true");
     }
 }

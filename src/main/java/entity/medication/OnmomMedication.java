@@ -53,4 +53,8 @@ public class OnmomMedication {
         this.totalDosage = totalDosage;
         this.remainingDosage = remainingDosage;
     }
+
+    public void setRemainingDosage(int remainingDosage) {
+        this.remainingDosage =  remainingDosage;
+    }
 }

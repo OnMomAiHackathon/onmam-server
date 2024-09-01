@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.DiaryService;
+import service.MedicationService;
 import service.ai.AIService;
+import service.ai.chatgpt.ChatGPTService;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,6 +24,8 @@ import java.util.List;
 public class DiaryController {
     private final DiaryService diaryService;
     private final AIService aiService;
+    private final ChatGPTService chatGPTService;
+    private final MedicationService medicationService;
 
 
     //다이어리 생성
@@ -33,6 +37,12 @@ public class DiaryController {
 
         //그림일기 생성
         DiaryEntryResponse response = diaryService.createDiaryEntry(request,aiDiaryResponse);
+
+        // AI에서 복약 정보를 먹었다는 결과를 받았을 때만 복약 정보 업데이트
+        boolean isEatedDrug = aiDiaryResponse.isMedicationStatus(); // 약을 먹었는지 여부는 AI의 응답으로 받아옴
+        if (isEatedDrug) {
+            medicationService.updateTodayMedication(request.getGroupId(), request.getUserId());
+        }
 
         //응답에 셋팅
         response.setImageUrl(aiDiaryResponse.getImageURL());
