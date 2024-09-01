@@ -1,14 +1,14 @@
 package controller;
 
+import dto.medication.MedicationResponse;
 import dto.medication.RegisterMedicationRequest;
 import dto.medication.RegisterMedicationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import service.MedicationService;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,5 +22,13 @@ public class MedicationController {
         RegisterMedicationResponse response = medicationService.registerMedication(registerMedicationRequest);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping
+    public ResponseEntity<List<MedicationResponse>> getUserMedications(@RequestParam Long userId, @RequestParam Long groupId) {
+        List<MedicationResponse> response = medicationService.getAllMedications(userId, groupId);
+        return ResponseEntity.ok(response);
+    }
+
+
 
 }
