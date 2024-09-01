@@ -2,7 +2,6 @@ package service;
 
 import dto.ai.AIDiaryResponse;
 import dto.diary.DailyAnswerResponse;
-import dto.diary.DiaryAuthRequest;
 import dto.diary.DiaryEntryRequest;
 import dto.diary.DiaryEntryResponse;
 import entity.diary.OnmomDailyAnswer;
@@ -161,9 +160,7 @@ public class DiaryService {
     }
 
     // 특정 연월의 다이어리 엔트리 가져오기
-    public List<DiaryEntryResponse> getMonthlyDiaryEntries(DiaryAuthRequest diaryAuthRequest) {
-        int year = diaryAuthRequest.getYear();
-        int month = diaryAuthRequest.getMonth();
+    public List<DiaryEntryResponse> getMonthlyDiaryEntries(Long groupId, Long userId, int year,int month) {
 
         // YearMonth를 이용해 해당 연도와 월을 표현
         YearMonth yearMonth = YearMonth.of(year, month);
@@ -173,8 +170,6 @@ public class DiaryService {
         LocalDate endDate = yearMonth.atEndOfMonth();
 
         // 주어진 그룹 ID로 그룹 조회
-        Long groupId = diaryAuthRequest.getGroupId();
-        Long userId = diaryAuthRequest.getUserId();
         OnmomGroup group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹 ID입니다."));
 
