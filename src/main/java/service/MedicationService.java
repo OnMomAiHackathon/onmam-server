@@ -13,6 +13,7 @@ import repository.group.GroupRepository;
 import repository.medication.MedicationRepository;
 import repository.user.UserRepository;
 
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -93,5 +94,24 @@ public class MedicationService {
                 .collect(Collectors.toList());
     }
 
+
+    public void updateTodayMedication(Long groupId, Long userId) {
+        OnmomGroup group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹 아이디입니다."));
+        OnmomUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 유저 아이디입니다."));
+
+        LocalDate today = LocalDate.now();
+
+        List<OnmomMedication> medications = medicationRepository.findByGroupAndUserAndStartDateLessThanEqualAndEndDateGreaterThanEqual(group, user, today, today);
+
+        for (OnmomMedication medication : medications) {
+            if (medication.getRemainingDosage() > 0) {
+                int dosageToReduce = Math.min(medication.getRemainingDosage(), medication.getFrequency());
+                medication.setRemainingDosage(medication.getRemainingDosage() - dosageToReduce);
+                medicationRepository.save(medication);
+            }
+        }
+    }
 
 }
