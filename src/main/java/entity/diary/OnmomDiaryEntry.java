@@ -35,6 +35,7 @@ public class OnmomDiaryEntry {
     private String transcribedContent; // 오디오 텍스트 내용
     @Column(columnDefinition = "TEXT")
     private String summaryText;//AI 요약된 내용
+    @Column(columnDefinition = "TEXT")
     private String imageURL; // 그림일기의 이미지 URL
     private String audioURL; // 음성 파일의 URL
 
