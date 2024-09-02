@@ -28,6 +28,10 @@ export OPENAI_DALLE_ENDPOINT=$(echo $SECRET | jq -r .OPENAI_DALLE_ENDPOINT)
 export OPENAI_TRANSCRIPTIONS_ENDPOINT=$(echo $SECRET | jq -r .OPENAI_TRANSCRIPTIONS_ENDPOINT)
 export OPENAI_GPT_ENDPOINT=$(echo $SECRET | jq -r .OPENAI_GPT_ENDPOINT)
 
+# kakao 환경변수
+export KAKAO_CLIENT_ID=$(echo $SECRET | jq -r .KAKAO_CLIENT_ID)
+export KAKAO_CLIENT_SECRET=$(echo $SECRET | jq -r .KAKAO_CLIENT_SECRET)
+
 # Spring Boot 애플리케이션 디렉터리
 SPRINGBOOT_DIR="/opt/onmom/springboot"
 

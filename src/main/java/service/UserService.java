@@ -9,9 +9,12 @@ import exception.auth.login.InvalidCredentialsException;
 import exception.user.get.UserNotFoundException;
 import exception.user.join.UserAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import repository.user.UserRepository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -42,7 +45,16 @@ public class UserService {
     // 회원 정보 조회
     public UserResponseDto getUserById(Long userId) {
         OnmomUser user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("유저를 찾을 수 없습니다."));
-        return new UserResponseDto(user);
+        return UserResponseDto.builder()
+                .userId(user.getUserId())
+                .kakaoId(user.getKakaoId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .birthdate(user.getBirthdate())
+                .phone(user.getPhone())
+                .role(user.getRole())
+                .gender(user.getGender())
+                .build();
     }
 
 
@@ -62,5 +74,44 @@ public class UserService {
 
         // 로그인 성공 시 사용자 정보 반환
         return Optional.of(new LoginResponse(user.getUserId(), user.getKakaoId(), user.getEmail(), user.getName(), groupId));
+    }
+
+    //카카오로그인시 이메일을 찾고, 없으면 회원가입한다.
+    public OnmomUser findOrCreateUser(String kakaoEmail, String name) {
+        return userRepository.findByKakaoId(kakaoEmail)
+                .orElseGet(() -> userRepository.save(
+                        OnmomUser.builder()
+                                .kakaoId(kakaoEmail)
+                                .email(kakaoEmail)
+                                .name(name)
+                                .build()
+                ));
+    }
+
+    public UserResponseDto buildUserResponseDto(OAuth2AuthenticationToken authentication, OnmomUser user, String accessToken) {
+        OAuth2User oauth2User = authentication.getPrincipal();
+
+        // 필요한 경우 추가 정보를 여기서 처리
+
+        return UserResponseDto.builder()
+                .userId(user.getUserId())
+                .kakaoId(user.getKakaoId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .birthdate(user.getBirthdate())
+                .phone(user.getPhone())
+                .role(user.getRole())
+                .gender(user.getGender())
+                .accessToken(accessToken)  // 액세스 토큰 설정
+                .build();
+    }
+
+    public String getGroupIdByUserId(Long userId) {
+        OnmomUser onmomUser = userRepository.findById(userId).orElseThrow(() -> {
+            throw new IllegalArgumentException("유효하지 않은 유저 아이디입니다.");
+        });
+
+        return Optional.ofNullable(onmomUser.getGroup()).map(onmomGroup -> onmomGroup.getGroupId().toString()).orElse("");
+
     }
 }

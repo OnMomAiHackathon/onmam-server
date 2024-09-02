@@ -99,4 +99,25 @@ public class S3Service {
         String folderName = "group/" + groupId;
         return uploadFile(groupImage, folderName);
     }
+
+    public String uploadGalleryImage(MultipartFile file, Long groupId) throws IOException {
+        if (groupId == null) {
+            throw new IllegalArgumentException("S3 갤러리 이미지 저장시 그룹 아이디는 null이 될 수 없습니다.");
+        }
+        // Gallery 폴더 하위에 그룹 ID를 사용하여 경로 설정
+        String fileName = "gallery/" + groupId + "/" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
+        // PutObjectRequest 생성 시, InputStream으로 파일 내용을 읽어 S3에 업로드
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .contentType(file.getContentType())
+                .build();
+
+        // MultipartFile의 InputStream을 사용하여 S3에 업로드
+        s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+
+        return getFileUrl(fileName);
+    }
+
 }

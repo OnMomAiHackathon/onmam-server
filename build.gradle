@@ -53,11 +53,11 @@ dependencies {
 	implementation 'com.squareup.okhttp3:okhttp:4.10.0'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 
-//	// OkHttp3 라이브러리 추가
-//	implementation 'com.squareup.okhttp3:okhttp:4.9.3'
-//
-//	// org.json 라이브러리 추가
-//	implementation 'org.json:json:20210307'
+	//Kakao OAuth2.0
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security:spring-security-oauth2-client'
+	implementation 'org.springframework.security:spring-security-oauth2-jose'
 
 
 }

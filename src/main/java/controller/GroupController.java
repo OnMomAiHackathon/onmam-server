@@ -86,6 +86,8 @@ public class GroupController {
                         .userId(user.getUserId())
                         .name(user.getName())
                         .role(user.getRole())
+                        .profileImageUrl(user.getProfileImageUrl())
+                        .gender(user.getGender())
                         .build()
                 ).toList();
 
@@ -101,7 +103,6 @@ public class GroupController {
 
     }
 
-    //그룹장이 그룹원을 그룹에서 추방하는 api
     // 그룹장이 그룹원을 그룹에서 추방하는 API
     @PostMapping("/{groupId}/expel")
     public ResponseEntity<Map<String, String>> expelMember(

@@ -10,7 +10,12 @@ import org.springframework.web.bind.annotation.*;
 import service.KakaoAuthService;
 import service.UserService;
 
+
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -31,9 +36,11 @@ public class AuthController {
 
     //로그아웃
     @GetMapping("/logout")
-    public ResponseEntity<Void> logout(HttpSession session) {
+    public ResponseEntity<Map<String,String>> logout(HttpSession session) {
         session.invalidate();  // 세션 무효화
-        return ResponseEntity.ok().build();
+        Map<String,String> response = new HashMap<>();
+        response.put("message", "로그아웃되었습니다.");
+        return ResponseEntity.ok(response);
     }
 
 
