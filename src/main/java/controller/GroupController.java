@@ -60,11 +60,10 @@ public class GroupController {
     }
 
     // 가족 초대 수락
-    @PostMapping("/{groupId}/invite/accept")
+    @PostMapping("/invite/accept")
     public ResponseEntity<InviteAcceptResponse> acceptInvite(
-            @PathVariable Long groupId,
             @RequestBody InviteAcceptRequest request) {
-        InviteAcceptResponse response = onmomGroupService.acceptInvite(groupId, request);
+        InviteAcceptResponse response = onmomGroupService.acceptInvite(request);
         return ResponseEntity.ok(response);
     }
 

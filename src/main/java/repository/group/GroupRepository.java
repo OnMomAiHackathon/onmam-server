@@ -8,4 +8,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GroupRepository extends JpaRepository<OnmomGroup,Long> {
+    Optional<OnmomGroup> findByInvitationCode(String inviteCode);
 }
