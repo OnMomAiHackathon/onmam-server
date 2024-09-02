@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AIDiaryResponse {
+    private String title;
     private String summary;
     private String translatedContent;
     private String imageURL;

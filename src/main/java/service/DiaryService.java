@@ -43,7 +43,7 @@ public class DiaryService {
         // OnmomDiaryEntry 생성
         OnmomDiaryEntry diaryEntry = OnmomDiaryEntry.builder()
                 .group(group)
-                .title(aiDiaryResponse.getSummary()) // AI 요약된 내용을 제목으로 설정
+                .title(aiDiaryResponse.getTitle()) // AI 요약된 내용을 제목으로 설정
                 .transcribedContent(aiDiaryResponse.getTranslatedContent())
                 .summaryText(aiDiaryResponse.getSummary())
                 .imageURL("") // 이미지 URL은 나중에 DALL·E로 생성
