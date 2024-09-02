@@ -15,6 +15,7 @@ import service.ai.AIService;
 import service.ai.chatgpt.ChatGPTService;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
@@ -35,7 +36,13 @@ public class DiaryController {
         AIDiaryResponse aiDiaryResponse = aiService.processResponse(request.getAudioFile(), request.getUserId());
 
         //그림일기 생성
-        DiaryEntryResponse response = diaryService.createDiaryEntry(request,aiDiaryResponse);
+        DiaryEntryResponse response = null;
+        try {
+            response = diaryService.createDiaryEntry(request,aiDiaryResponse);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
 
         // AI에서 복약 정보를 먹었다는 결과를 받았을 때만 복약 정보 업데이트
         boolean isEatedDrug = aiDiaryResponse.isMedicationStatus(); // 약을 먹었는지 여부는 AI의 응답으로 받아옴
