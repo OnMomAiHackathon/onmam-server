@@ -105,4 +105,13 @@ public class UserService {
                 .accessToken(accessToken)  // 액세스 토큰 설정
                 .build();
     }
+
+    public String getGroupIdByUserId(Long userId) {
+        OnmomUser onmomUser = userRepository.findById(userId).orElseThrow(() -> {
+            throw new IllegalArgumentException("유효하지 않은 유저 아이디입니다.");
+        });
+
+        return Optional.ofNullable(onmomUser.getGroup()).map(onmomGroup -> onmomGroup.getGroupId().toString()).orElse("");
+
+    }
 }

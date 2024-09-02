@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import service.UserService;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -59,5 +60,14 @@ public class UserController {
     @GetMapping("/failure")
     public ResponseEntity<String> oauth2LoginFailure() {
         return ResponseEntity.badRequest().body("카카오 로그인 실패");
+    }
+
+    // user아이디에 따른 groupId를 반환하는 api
+    @GetMapping("/groupId")
+    public ResponseEntity<Map<String,String>> getGroupIdByUserId(@RequestParam Long userId){
+        String groupId = userService.getGroupIdByUserId(userId);
+        Map<String,String> response = new HashMap<>();
+        response.put("groupId",groupId.toString());
+        return ResponseEntity.ok(response);
     }
 }
