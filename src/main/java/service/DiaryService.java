@@ -1,5 +1,7 @@
 package service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.ai.AIDiaryResponse;
 import dto.diary.DailyAnswerResponse;
 import dto.diary.DiaryEntryRequest;
@@ -14,6 +16,7 @@ import repository.diary.OnmomDailyAnswerRepository;
 import repository.group.GroupRepository;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -27,9 +30,12 @@ public class DiaryService {
     private final DiaryEntryRepository diaryEntryRepository;
     private final GroupRepository groupRepository;
     private final OnmomDailyAnswerRepository dailyAnswerRepository;
+    private final MedicationService medicationService;
+    private final ObjectMapper objectMapper;
 
     // 다이어리 엔트리 생성
-    public DiaryEntryResponse createDiaryEntry(DiaryEntryRequest request, AIDiaryResponse aiDiaryResponse) throws IOException {
+    // 다이어리 엔트리 생성
+    public DiaryEntryResponse createDiaryEntry(DiaryEntryRequest request, AIDiaryResponse aiDiaryResponse) throws IOException, URISyntaxException {
         // 그룹 조회
         OnmomGroup group = groupRepository.findById(request.getGroupId())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹 ID입니다."));
@@ -40,19 +46,32 @@ public class DiaryService {
         // S3에 오디오 파일 업로드
         String audioUrl = s3Service.uploadAudioFile(audioData, request.getGroupId().toString());
 
+        // S3에 AI 이미지 업로드 및 repository 저장
+        String aiImageUrl = s3Service.uploadAIImage(aiDiaryResponse.getImageURL(), request.getGroupId().toString());
+
+        // SummaryContent에서 title과 medicationStatus 추출
+        JsonNode summaryNode = objectMapper.readTree(aiDiaryResponse.getSummary());
+        String title = summaryNode.get("title").asText();
+        boolean medicationStatus = summaryNode.get("boolean").asBoolean();
+
         // OnmomDiaryEntry 생성
         OnmomDiaryEntry diaryEntry = OnmomDiaryEntry.builder()
                 .group(group)
-                .title(aiDiaryResponse.getTitle()) // AI 요약된 내용을 제목으로 설정
+                .title(title != null ? title : aiDiaryResponse.getTitle()) // title이 있으면 사용, 없으면 기본값 사용
                 .transcribedContent(aiDiaryResponse.getTranslatedContent())
                 .summaryText(aiDiaryResponse.getSummary())
-                .imageURL("") // 이미지 URL은 나중에 DALL·E로 생성
+                .imageURL(aiImageUrl)
                 .audioURL(audioUrl)
-                .medicationStatus(false) // 기본값으로 설정하거나 AI 응답을 기반으로 설정할 수 있습니다.
+                .medicationStatus(medicationStatus)
                 .build();
 
         // 다이어리 엔트리 저장
         diaryEntry = diaryEntryRepository.save(diaryEntry);
+
+        // 복약 상태가 true일 경우 복약 로그 추가
+        if (medicationStatus) {
+            medicationService.updateTodayMedication(request.getGroupId(), request.getUserId());
+        }
 
         // 질문과 답변 저장 (생략 가능)
         List<OnmomDailyAnswer> dailyAnswers = new ArrayList<>();
