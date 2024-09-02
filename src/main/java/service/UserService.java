@@ -106,12 +106,12 @@ public class UserService {
                 .build();
     }
 
-    public Long getGroupIdByUserId(Long userId) {
-        Optional<OnmomUser> onmomUser = Optional.ofNullable(userRepository.findById(userId).orElseThrow(() -> {
+    public String getGroupIdByUserId(Long userId) {
+        OnmomUser onmomUser = userRepository.findById(userId).orElseThrow(() -> {
             throw new IllegalArgumentException("유효하지 않은 유저 아이디입니다.");
-        }));
+        });
 
-        return onmomUser.get().getGroup().getGroupId();
+        return Optional.ofNullable(onmomUser.getGroup()).map(onmomGroup -> onmomGroup.getGroupId().toString()).orElse("");
 
     }
 }
