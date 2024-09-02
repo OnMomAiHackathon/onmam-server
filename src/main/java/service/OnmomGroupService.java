@@ -129,9 +129,9 @@ public class OnmomGroupService {
     }
 
     // 초대 수락 로직
-    public InviteAcceptResponse acceptInvite(Long groupId, InviteAcceptRequest request) {
+    public InviteAcceptResponse acceptInvite(InviteAcceptRequest request) {
         // 1. 그룹과 초대 코드 확인
-        OnmomGroup group = groupRepository.findById(groupId)
+        OnmomGroup group = groupRepository.findByInvitationCode(request.getInviteCode())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 그룹 아이디입니다."));
 
         if (!group.getInvitationCode().equals(request.getInviteCode())) {
