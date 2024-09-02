@@ -12,6 +12,11 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Service
 public class S3Service {
@@ -116,6 +121,26 @@ public class S3Service {
 
         // MultipartFile의 InputStream을 사용하여 S3에 업로드
         s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+
+        return getFileUrl(fileName);
+    }
+
+    public String uploadAIImage(String imageUrl, String groupId) throws IOException, URISyntaxException {
+        // 이미지 URL로부터 InputStream을 얻음
+        URL url = new URL(imageUrl);
+        InputStream inputStream = url.openStream();
+
+        // 파일 이름 생성
+        String fileName = "ai-image/" + groupId + "/" + System.currentTimeMillis() + ".png";
+
+        // S3에 이미지 업로드
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .contentType("image/png")
+                .build();
+
+        s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(inputStream, Files.size(Paths.get(url.toURI()))));
 
         return getFileUrl(fileName);
     }
