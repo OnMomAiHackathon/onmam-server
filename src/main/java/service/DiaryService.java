@@ -46,9 +46,6 @@ public class DiaryService {
         // S3에 오디오 파일 업로드
         String audioUrl = s3Service.uploadAudioFile(audioData, request.getGroupId().toString());
 
-        // S3에 AI 이미지 업로드 및 repository 저장
-        String aiImageUrl = s3Service.uploadAIImage(aiDiaryResponse.getImageURL(), request.getGroupId().toString());
-
         // SummaryContent에서 title과 medicationStatus 추출
         JsonNode summaryNode = objectMapper.readTree(aiDiaryResponse.getSummary());
         String title = summaryNode.get("title").asText();
@@ -60,7 +57,7 @@ public class DiaryService {
                 .title(title != null ? title : aiDiaryResponse.getTitle()) // title이 있으면 사용, 없으면 기본값 사용
                 .transcribedContent(aiDiaryResponse.getTranslatedContent())
                 .summaryText(aiDiaryResponse.getSummary())
-                .imageURL(aiImageUrl)
+                .imageURL(aiDiaryResponse.getImageURL())
                 .audioURL(audioUrl)
                 .medicationStatus(medicationStatus)
                 .build();
