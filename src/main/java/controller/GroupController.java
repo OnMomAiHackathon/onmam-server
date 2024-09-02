@@ -87,6 +87,8 @@ public class GroupController {
                         .userId(user.getUserId())
                         .name(user.getName())
                         .role(user.getRole())
+                        .profileImageUrl(user.getProfileImageUrl())
+                        .gender(user.getGender())
                         .build()
                 ).toList();
 
