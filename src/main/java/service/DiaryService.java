@@ -45,27 +45,22 @@ public class DiaryService {
         // S3에 오디오 파일 업로드
         String audioUrl = s3Service.uploadAudioFile(audioData, request.getGroupId().toString());
 
-        // SummaryContent에서 title과 medicationStatus 추출
-        JsonNode summaryNode = objectMapper.readTree(aiDiaryResponse.getSummary());
-//        String title = summaryNode.get("title").asText();
-        boolean medicationStatus = summaryNode.get("boolean").asBoolean();
-
         // OnmomDiaryEntry 생성
         OnmomDiaryEntry diaryEntry = OnmomDiaryEntry.builder()
                 .group(group)
-                .title(aiDiaryResponse.getTitle()) // title이 있으면 사용, 없으면 기본값 사용
+                .title(aiDiaryResponse.getTitle()) // aiDiaryResponse에서 직접 title 가져오기
                 .transcribedContent(aiDiaryResponse.getTranslatedContent())
                 .summaryText(aiDiaryResponse.getSummary())
                 .imageURL(aiDiaryResponse.getImageURL())
                 .audioURL(audioUrl)
-                .medicationStatus(medicationStatus)
+                .medicationStatus(aiDiaryResponse.isMedicationStatus()) // aiDiaryResponse에서 직접 medicationStatus 가져오기
                 .build();
 
         // 다이어리 엔트리 저장
         diaryEntry = diaryEntryRepository.save(diaryEntry);
 
         // 복약 상태가 true일 경우 복약 로그 추가
-        if (medicationStatus) {
+        if (aiDiaryResponse.isMedicationStatus()) {
             medicationService.updateTodayMedication(request.getGroupId(), request.getUserId());
         }
 
@@ -97,6 +92,7 @@ public class DiaryService {
                 .dailyAnswers(dailyAnswerResponses)
                 .build();
     }
+
 
     // 특정 다이어리 엔트리 가져오기
     public DiaryEntryResponse getDiaryEntry(Long diaryEntryId) {
