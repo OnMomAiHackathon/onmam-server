@@ -29,6 +29,7 @@ public class OnmomUser {
     private String gender; // 성별
     private LocalDate birthdate; // 생일
     private String phone; // 휴대폰
+    private String profileImageUrl;
 
     // !!! 정규화에 위반한 필드 !!!
     // but 프로젝트 단순성을 위해 role을 유저에 포함했다.
@@ -58,7 +59,7 @@ public class OnmomUser {
 
 
     @Builder
-    public OnmomUser(String email, String password, String name, LocalDate birthdate, String gender, String phone, String kakaoId, String role, OnmomGroup group) {
+    public OnmomUser(String email, String password, String name, LocalDate birthdate, String gender, String phone, String kakaoId, String role, OnmomGroup group, String profileImageUrl) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -68,6 +69,7 @@ public class OnmomUser {
         this.kakaoId = kakaoId;
         this.role = role;
         this.group = group;
+        this.profileImageUrl = profileImageUrl;
     }
 
     // 그룹생성시 set Group!
