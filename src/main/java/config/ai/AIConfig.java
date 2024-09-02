@@ -10,7 +10,7 @@ public class AIConfig {
             # 요청
             독거 노인 어르신께서 자기 일상을 AI와 대화로 나눈 <transcript>를 읽고 이 대화 내용을 요약해서 300자의 일기 형식으로 만들어 줘.
             이 일기는 어르신의 자식분들이 보게 될 거야.
-            
+           
             # 유의 사항 1
             약을 복용했는지 묻는 부분이 있을 텐데, 이 부분을 꼭 참고해서 response 시작 부분에 true인지 false인지 알려줘.
             복용했다면 true이고, 안 했다면 false야. 반드시 반드시 반드시 포함해야 해. true or false, 둘 중 하나만 포함하도록 해 무조건.
@@ -25,6 +25,9 @@ public class AIConfig {
             
             # 유의 사항 4
             오디오 외의 내용은 생성하지 마. 오디오 안의 내용만 가지고 요약해 줘.
+            
+            # 유의 사항 5
+            위 유의사항들을 충족한 title을 중괄호로 감싸서 response시작부분에 유의사항1과 함께 제공해줘.(예시:{title:'노인회관에서 다른 할아버지들과 자녀 얘기를 나눈 날', boolean:true})
             """;
     private final String IMAGE_PROMPT =
             """
