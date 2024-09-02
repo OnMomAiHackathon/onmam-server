@@ -196,4 +196,5 @@ public class OnmomGroupService {
         userRepository.save(targetUser);
         groupRepository.save(group); // 그룹 엔티티 업데이트
     }
+
 }

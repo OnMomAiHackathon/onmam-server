@@ -102,7 +102,6 @@ public class GroupController {
 
     }
 
-    //그룹장이 그룹원을 그룹에서 추방하는 api
     // 그룹장이 그룹원을 그룹에서 추방하는 API
     @PostMapping("/{groupId}/expel")
     public ResponseEntity<Map<String, String>> expelMember(
