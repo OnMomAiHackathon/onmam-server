@@ -7,5 +7,6 @@ import lombok.Getter;
 @Builder
 public class InviteAcceptResponse {
     private String message;
+    private String groupId;
 
 }

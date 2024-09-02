@@ -154,6 +154,7 @@ public class OnmomGroupService {
         // 4. 응답 생성
         return InviteAcceptResponse.builder()
                 .message("초대가 성공적으로 수락되었습니다.")
+                .groupId(String.valueOf(group.getGroupId()))
                 .build();
     }
 
