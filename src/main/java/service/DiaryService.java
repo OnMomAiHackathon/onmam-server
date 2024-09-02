@@ -34,7 +34,6 @@ public class DiaryService {
     private final ObjectMapper objectMapper;
 
     // 다이어리 엔트리 생성
-    // 다이어리 엔트리 생성
     public DiaryEntryResponse createDiaryEntry(DiaryEntryRequest request, AIDiaryResponse aiDiaryResponse) throws IOException, URISyntaxException {
         // 그룹 조회
         OnmomGroup group = groupRepository.findById(request.getGroupId())
@@ -48,13 +47,13 @@ public class DiaryService {
 
         // SummaryContent에서 title과 medicationStatus 추출
         JsonNode summaryNode = objectMapper.readTree(aiDiaryResponse.getSummary());
-        String title = summaryNode.get("title").asText();
+//        String title = summaryNode.get("title").asText();
         boolean medicationStatus = summaryNode.get("boolean").asBoolean();
 
         // OnmomDiaryEntry 생성
         OnmomDiaryEntry diaryEntry = OnmomDiaryEntry.builder()
                 .group(group)
-                .title(title != null ? title : aiDiaryResponse.getTitle()) // title이 있으면 사용, 없으면 기본값 사용
+                .title(aiDiaryResponse.getTitle()) // title이 있으면 사용, 없으면 기본값 사용
                 .transcribedContent(aiDiaryResponse.getTranslatedContent())
                 .summaryText(aiDiaryResponse.getSummary())
                 .imageURL(aiDiaryResponse.getImageURL())
