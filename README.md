@@ -1,17 +1,73 @@
 # onmom-server
 
-서버 URL : http://15.165.54.182:8080/
+서버 URL : [http://15.165.54.182:8080/](http://15.165.54.182:8080/)
 
+## 프로젝트 소개
 
+### 프로젝트 개요
 
-### ERD
-![0903erd_snake](https://github.com/user-attachments/assets/0b146978-de94-446a-8033-e6367adb8f4a)
+독거노인과 그 가족 간의 정서적 연결을 돕기 위해 AI 기반 그림일기 서비스를 제공하는 웹 애플리케이션입니다. 백엔드에서는 가족 그룹 관리, AI와의 상호작용을 통한 일기 생성, 그리고 가족 간의 정보 공유 기능을 중심으로 구축되었습니다.
 
-### Service Architecture
-![architecture](https://github.com/user-attachments/assets/881f80c2-e663-45a8-a6b7-7cbd9484f5e0)
+## 🛠 기술 스택
 
+1. **BE**
+   - **Spring Boot**와 **Spring Data JPA**를 사용하여 확장성과 유지보수성을 고려한 서버를 구축했습니다. 특히 **영속성 컨텍스트**를 활용하여 데이터의 일관성을 유지하며, **트랜잭션 관리**를 통해 안정적인 데이터 처리를 보장하고 복잡한 데이터베이스 연동 작업을 간소화했습니다.
 
-### 폴더구조
+2. **DB**
+   - **MySQL** 데이터베이스와의 효율적인 연동을 통해 데이터의 무결성과 성능을 보장하며, 안정적인 데이터 관리를 실현하였습니다.
+
+3. **Infra**
+   - **AWS EC2**를 사용하여 서버 인프라를 구축하고, **AWS S3**를 활용한 파일 저장 및 관리 기능을 제공함으로써, 신속하고 안전한 배포를 지원합니다. 클라우드 인프라를 통해 유연한 확장성과 높은 가용성을 확보했습니다.
+
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=Spring%20Boot&logoColor=white)
+![Spring Data JPA](https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=for-the-badge&logo=Spring%20&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white)
+![AWS S3 SDK](https://img.shields.io/badge/AWS%20S3%20SDK-FF9900?style=for-the-badge&logo=Amazon%20AWS&logoColor=white)
+![AWS EC2](https://img.shields.io/badge/AWS%20EC2-FF9900?style=for-the-badge&logo=Amazon%20AWS&logoColor=white)
+![AWS CodeDeploy](https://img.shields.io/badge/AWS%20CodeDeploy-FF9900?style=for-the-badge&logo=Amazon%20AWS&logoColor=white)
+![AWS Secrets Manager](https://img.shields.io/badge/AWS%20Secrets%20Manager-FF9900?style=for-the-badge&logo=Amazon%20AWS&logoColor=white)
+
+### 주요 기능 및 API
+
+**주요 기능**
+
+- **그룹 생성 및 관리**: 가족 구성원 간의 그룹을 생성하고, 초대 코드를 통해 쉽게 그룹에 참여할 수 있도록 했습니다. 이 기능을 통해 가족 간의 소통을 원활하게 지원합니다.
+- **복약 정보 및 검진일 관리**: 자식들이 부모님의 복약 정보와 검진 일정을 등록하고 관리할 수 있도록 지원하여, 부모님의 건강을 체계적으로 관리할 수 있습니다.
+- **AI 기반 그림일기 생성**: 생성형 AI를 활용하여 어르신들이 AI와 대화를 통해 그림일기를 생성할 수 있도록 했습니다. AI가 어르신의 이야기를 듣고, 이를 바탕으로 자동으로 그림일기와 텍스트 일기를 생성합니다.
+- **가족 간 일기 공유**: 생성된 일기와 그림을 가족들이 쉽게 조회하고, 공유할 수 있도록 지원하여, SNS 사용 없이도 가족 간 소통이 가능하도록 했습니다.
+
+**Swagger를 사용한 API 문서화** : [http://15.165.54.182:8080/swagger-ui/index.html](http://15.165.54.182:8080/swagger-ui/index.html)
+
+**특이사항**
+
+- **생성형 AI의 활용**: OpenAI와 같은 최신 AI 기술을 통합하여 사용자 경험을 향상시켰습니다.
+
+    - **STT (Speech-to-Text)**: OpenAI의 Whisper를 사용하여 어르신의 음성을 텍스트로 전사합니다.
+    - **AI 이미지 생성**: DALL·E를 활용해 어르신의 이야기에서 생성된 텍스트를 기반으로 그림을 자동 생성합니다.
+    - **대화 요약**: ChatGPT 3.5를 사용하여 어르신과의 대화를 요약하고, 그 내용을 바탕으로 일기를 작성합니다.
+
+## ERD
+
+![ERD](https://github.com/user-attachments/assets/0b146978-de94-446a-8033-e6367adb8f4a)
+
+## 아키텍처
+
+아키텍처 설계시 중요시한 부분은 ‘신속한 배포를 통해 주어진 시간 동안 목표한 API를 모두 제공하는 것’이었습니다. 따라서 소규모 프로젝트에 맞게 아래와 같이 아키텍처를 설계하였습니다.
+
+- **시스템 아키텍처**
+    - 모놀리식 아키텍처를 채택하여 프로젝트 복잡도를 줄이고자 했습니다.
+- **배포 아키텍처**
+    - **배포 전략**: In-place 전략을 통해 배포 시 다운타임을 허용했습니다. 배포 속도를 최적화하고, 간소화된 프로세스로 시간/금전 효율적인 배포를 구현했습니다.
+    - **CI/CD**: GitHub Actions를 활용하여 CI/CD 파이프라인을 구축했습니다. 이를 통해 코드 변경 시 자동으로 빌드, 테스트, 배포가 이루어지도록 하여 배포 프로세스를 자동화하고, 신속한 배포를 지향했습니다.
+
+![아키텍처](https://github.com/user-attachments/assets/881f80c2-e663-45a8-a6b7-7cbd9484f5e0)
+
+## 패키지 구조
+
+**생산성이 높은 프로젝트 수행을 위해 아래와 같은 패키지 구조로 설계했습니다.**
+
+- ‘패키지 하위에 도메인이 포함된 구조’로 설계하여 생산성과 프로젝트 단순성을 높였습니다.
+- 구체적으로, 기능별 패키지(controller, service, repository, entity, dto)를 최상위에 배치하고, 그 하위에 각 도메인 관련 클래스 혹은 패키지(ai, auth, diary 등)를 구분했습니다.
 
 ```plaintext
 ├─ .github
@@ -70,3 +126,4 @@
     │  └─ resources
     │      └─ erd           # 엔티티 관계도(ERD) 파일
     └─ test                 # 테스트 코드가 위치한 디렉터리
+```
