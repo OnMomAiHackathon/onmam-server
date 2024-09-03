@@ -1,11 +1,14 @@
 package dto.user.get;
 
-import entity.user.OnmomUser;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
 
 @Getter
+@Builder
+@AllArgsConstructor
 public class UserResponseDto {
     private Long userId;
     private String kakaoId;
@@ -14,14 +17,6 @@ public class UserResponseDto {
     private LocalDate birthdate;
     private String phone;
     private String role;
-
-    public UserResponseDto(OnmomUser user) {
-        this.userId = user.getUserId();
-        this.kakaoId = user.getKakaoId();
-        this.email = user.getEmail();
-        this.name = user.getName();
-        this.birthdate = user.getBirthdate();
-        this.phone = user.getPhone();
-        this.role = user.getRole();
-    }
+    private String gender;
+    private String accessToken;  // 액세스 토큰 추가
 }

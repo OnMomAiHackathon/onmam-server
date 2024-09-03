@@ -1,6 +1,8 @@
 package entity.user;
 
+import entity.diary.OnmomDiaryEntry;
 import entity.group.OnmomGroup;
+import entity.group.UserNickname;
 import entity.medication.OnmomMedication;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -24,8 +26,10 @@ public class OnmomUser {
     private String email; // 이메일
     private String password; // 비번
     private String name; // 이름
+    private String gender; // 성별
     private LocalDate birthdate; // 생일
     private String phone; // 휴대폰
+    private String profileImageUrl;
 
     // !!! 정규화에 위반한 필드 !!!
     // but 프로젝트 단순성을 위해 role을 유저에 포함했다.
@@ -37,19 +41,42 @@ public class OnmomUser {
     private OnmomGroup group;
 
     // 하나의 유저는 여러 복약 정보를 가질 수 있다.
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<OnmomMedication> medications;
 
 
+    // 사용자가 설정한 닉네임들
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<UserNickname> nicknamesSetByUser;
+
+    // 사용자가 타인에게 설정된 닉네임들
+    @OneToMany(mappedBy = "targetUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<UserNickname> nicknamesSetOnUser;
+
+    // 한 유저는 여러 그림일기를 가질 수 있다
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<OnmomDiaryEntry> diaryEntries;
+
+
     @Builder
-    public OnmomUser(String email, String password, String name, LocalDate birthdate, String phone, String kakaoId, String role, OnmomGroup group) {
+    public OnmomUser(String email, String password, String name, LocalDate birthdate, String gender, String phone, String kakaoId, String role, OnmomGroup group, String profileImageUrl) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.birthdate = birthdate;
+        this.gender = gender;
         this.phone = phone;
         this.kakaoId = kakaoId;
         this.role = role;
         this.group = group;
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    // 그룹생성시 set Group!
+    public void setGroup(OnmomGroup group) {
+        this.group = group;
+    }
+    public void setRole(String role) {
+        this.role = role;
     }
 }
