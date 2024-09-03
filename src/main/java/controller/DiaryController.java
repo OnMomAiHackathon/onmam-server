@@ -5,6 +5,8 @@ import dto.diary.DiaryEntryRequest;
 import dto.diary.DiaryEntryResponse;
 import dto.diary.question.AnswerRequest;
 import dto.diary.question.ResponseMessage;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/diaries")
 @RequiredArgsConstructor
+@Tag(name = "그림일기 관련 API")
 public class DiaryController {
     private final DiaryService diaryService;
     private final AIService aiService;
@@ -30,6 +33,7 @@ public class DiaryController {
 
     //다이어리 생성
     @PostMapping("/create")
+    @Operation(summary = "그림 일기 생성", description = "AI 그림일기를 생성하고 사용자의 음성을 텍스트로 변환하여 생성형 AI를 통해 일기로 요약합니다.")
     @Transactional
     public ResponseEntity<DiaryEntryResponse> createDiaryEntry(@ModelAttribute DiaryEntryRequest request) throws IOException {
         //오디오 MultipartFile을 파일로 변환하여 ai단에 넘김
@@ -60,6 +64,7 @@ public class DiaryController {
 
     //특정 다이어리 조회
     @GetMapping("/{diaryEntryId}")
+    @Operation(summary = "특정 그림 일기 조회", description = "그림일기 아이디를 통해 특정 그림 일기를 조회합니다.")
     public ResponseEntity<DiaryEntryResponse> getDiaryEntry(@PathVariable Long diaryEntryId) {
         DiaryEntryResponse response = diaryService.getDiaryEntry(diaryEntryId);
         return ResponseEntity.ok(response);
@@ -67,6 +72,7 @@ public class DiaryController {
 
     //다이어리 월별 조회
     @GetMapping("/monthly")
+    @Operation(summary = "그림 일기 월별 조회", description = "월별 그림일기를 조회합니다.")
     public ResponseEntity<List<DiaryEntryResponse>> getMonthlyDiaryEntries(@RequestParam Long groupId,
                                                                            @RequestParam Long userId,
                                                                            @RequestParam int year,
@@ -77,6 +83,7 @@ public class DiaryController {
 
     //모든 다이어리 조회
     @GetMapping
+    @Operation(summary = "모든 그림일기 조회", description = "모든 그림일기를 조회합니다.")
     public ResponseEntity<List<DiaryEntryResponse>> getAllDiaryEntries() {
         List<DiaryEntryResponse> diaryEntries = diaryService.getAllDiaryEntries();
         return ResponseEntity.ok(diaryEntries);
@@ -94,21 +101,16 @@ public class DiaryController {
     // 특정 그룹의 이미지 및 오디오 URL들을 가져오기
     // *********** 테스트 필요 ***********
     @GetMapping("/group/{groupId}/media")
+    @Operation(summary = "이미지 및 오디오 불러오기", description = "특정 그룹의 이미지 및 오디오들을 가져옵니다.")
     public ResponseEntity<List<DiaryEntryResponse>> getGroupMedia(@PathVariable Long groupId) {
         List<DiaryEntryResponse> diaryEntryResponses = diaryService.getGroupMedia(groupId);
         return ResponseEntity.ok(diaryEntryResponses);
     }
 
-//    // 특정 그림일기의 이미지 및 오디오 URL 가져오기
-//    // *********** 테스트 필요 ***********
-//    @GetMapping("/{diaryEntryId}/media")
-//    public ResponseEntity<DiaryEntryResponse> getDiaryEntryMedia(@PathVariable Long diaryEntryId) {
-//        DiaryEntryResponse diaryEntryResponse = diaryService.getDiaryEntry(diaryEntryId);
-//        return ResponseEntity.ok(diaryEntryResponse);
-//    }
 
     // 질문에 대한 답변 받기
     @PostMapping("/entries/{diaryEntryId}/answer")
+    @Operation(summary = "그림일기 생성시 나오는 질문에 대한 답변 받기", description = "클라이언트 단의 그림일기 생성시 질문에 대한 답변을 서버에 저장합니다.")
     public ResponseEntity<?> receiveAnswer(@PathVariable Long diaryEntryId, @RequestBody AnswerRequest answerRequest) {
         diaryService.saveAnswer(diaryEntryId, answerRequest.getQuestion(), answerRequest.getAnswer());
         return ResponseEntity.ok(new ResponseMessage("다이어리 질문에 대한 답변이 성공적으로 전달되었습니다."));

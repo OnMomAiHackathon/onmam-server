@@ -53,7 +53,7 @@ public class DallEService {
         String finalPrompt = prompt + summary;
 
         // 사용자 정보 추가로 입력 시(성별, 나이 등)
-        finalPrompt += "\n<사용자 정보> " + age + "세 " + gender;
+        finalPrompt += "\n<다음 사용자 정보를 꼭 반영해서 만들어줘.> 나이" + age + "세, 성별 " + gender;
 
 
         JSONObject jsonObject = new JSONObject();
