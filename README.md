@@ -27,7 +27,7 @@
 ![AWS CodeDeploy](https://img.shields.io/badge/AWS%20CodeDeploy-FF9900?style=for-the-badge&logo=Amazon%20AWS&logoColor=white)
 ![AWS Secrets Manager](https://img.shields.io/badge/AWS%20Secrets%20Manager-FF9900?style=for-the-badge&logo=Amazon%20AWS&logoColor=white)
 
-### 주요 기능 및 API
+## 주요 기능 및 API
 
 **주요 기능**
 
@@ -37,7 +37,7 @@
 - **가족 간 일기 공유**: 생성된 일기와 그림을 가족들이 쉽게 조회하고, 공유할 수 있도록 지원하여, SNS 사용 없이도 가족 간 소통이 가능하도록 했습니다.
 
 
-**전체 API Swagger 페이지에서 보기 :** : [Link](http://15.165.54.182:8080/swagger-ui/index.html)
+### **전체 API Swagger 페이지에서 보기 :** : [Link](http://15.165.54.182:8080/swagger-ui/index.html)
 ![api명세](https://github.com/user-attachments/assets/5cf6ddad-fded-4260-9da1-55eb4a88978b)
 
 
